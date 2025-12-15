@@ -4,62 +4,152 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Bring Cargo Ltd. — Postcode Portal</title>
+  <title>Postcode Portal</title>
 
-  <!-- Optional: modern, neutral font
+  <!-- OPTIONAL: Use a clean, portal-like font -->
   https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap
 
-  <!-- Site CSS -->
-  css/app.css
+  <style>
+    /* ======= THEME (tweak these to match your reference site) ======= */
+    :root{
+      /* Brand primary (header/sidebar highlight) */
+      --brand:#0b5bb5;      /* change to the site’s main blue */
+      --brand-dark:#084a92; /* darker shade of brand */
+
+      /* Surface colors */
+      --bg:#f5f7fb;         /* page background (very light) */
+      --panel:#ffffff;      /* cards/panels */
+      --panel-border:#e4e8f0;
+
+      /* Text colors */
+      --text:#192233;
+      --muted:#64748b;
+
+      /* Accents / states */
+      --focus:#2563eb;      /* input focus ring */
+      --line:#d6dbe6;       /* separators */
+    }
+
+    /* ======= BASE ======= */
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font:16px/1.5 "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial;
+    }
+    a{color:inherit;text-decoration:none}
+
+    /* ======= HEADER ======= */
+    .header{
+      display:flex; align-items:center; gap:16px;
+      padding:12px 18px;
+      background:linear-gradient(0deg, var(--brand), var(--brand-dark));
+      color:#fff; border-bottom:1px solid rgba(255,255,255,.15);
+      position:sticky; top:0; z-index:100;
+    }
+    .logo{
+      font-weight:600; letter-spacing:.2px;
+    }
+    .header .nav{
+      margin-left:auto; display:flex; gap:18px;
+    }
+    .header .nav a{opacity:.9}
+    .header .nav a:hover{opacity:1}
+
+    /* ======= LAYOUT ======= */
+    .layout{
+      display:grid;
+      grid-template-columns: 240px 1fr;
+      gap:16px;
+      max-width:1200px;
+      margin:20px auto 40px;
+      padding:0 16px;
+    }
+
+    /* ======= SIDEBAR ======= */
+    .sidebar{
+      background:#fff;
+      border:1px solid var(--panel-border);
+      border-radius:12px;
+      padding:12px;
+    }
+    .sidebar h3{
+      margin:6px 0 12px; font-size:13px; color:var(--muted); font-weight:600;
+    }
+    .menu{display:grid; gap:6px}
+    .menu a{
+      padding:10px 12px; border-radius:10px;
+      border:1px solid var(--panel-border); background:#fafbff; font-size:14px;
+    }
+    .menu a.active{background:#edf3ff; border-color:#c8dcff}
+
+    /* ======= CONTENT / CARDS ======= */
+    .content{display:grid; gap:16px}
+    .card{
+      background:var(--panel);
+      border:1px solid var(--panel-border);
+      border-radius:12px; padding:14px;
+    }
+    h2{font-size:18px; margin:0 0 12px}
+    label{display:block; font-size:12px; color:var(--muted); margin-bottom:6px}
+    input,select{
+      width:100%; padding:10px 12px; border-radius:10px;
+      border:1px solid var(--panel-border); background:#fff; color:var(--text); outline:none;
+    }
+    input:focus,select:focus{
+      border-color:var(--focus);
+      box-shadow:0 0 0 3px rgba(37,99,235,.15);
+    }
+    .grid{display:grid; gap:12px}
+    .topbar{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+    .summary{margin-top:8px}
+    .muted{color:var(--muted)}
+    .small{font-size:12px}
+
+    /* Numbers */
+    .numbers-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+    .pill{
+      display:inline-grid; grid-auto-flow:column; gap:8px; align-items:center;
+      padding:8px 10px; border:1px solid var(--panel-border);
+      border-radius:999px; background:#fafbff; color:var(--muted)
+    }
+
+    @media (max-width:900px){
+      .layout{grid-template-columns:1fr}
+      .topbar,.numbers-grid{grid-template-columns:1fr}
+    }
+  </style>
 </head>
 <body>
-  <!-- HEADER -->
+
+  <!-- HEADER (matches typical enterprise portals) -->
   <header class="header">
-    <div class="header__brand">
-      <div class="logo"></div>
-      <div class="brand-text">Freight Calculator.</div>
-    </div>
-    <div class="header__right">
-      <!-- Replace with your real user/org text if desired
-      <span class="user-label">Signed in</span>
-      <div class="header-icons">
-        <span class="icon" aria-hidden="true">⚙️</span>
-        <span class="icon" aria-hidden="true">🔔</span>
-        <span class="icon" aria-hidden="true">❓</span>
-      </div>
-    </div>
+    <div class="logo">Transport Portal</div>
+    <nav class="nav">
+      #Dashboard</a>
+      #Collection & Delivery</a>
+      #Reports</a>
+      #Help</a>
+    </nav>
   </header>
 
-  <!-- TOP NAV (white)
-  <nav class="topnav">
-    #Shipment Overview</a>
-    #EDI Overview</a>
-    #Customs Overview</a>
-    #Trip Overview</a>
-    #Plan Board</a>
-    #Process Scanned Documents</a>
-    #Address Overview</a>
-    #Master Data</a>
-    #Invoicing</a>
-  </nav>
+  <!-- MAIN LAYOUT: Sidebar + Content -->
+  <div class="layout">
+    <aside class="sidebar">
+      <h3>Navigation</h3>
+      <div class="menu">
+        #Postcode Lookup</a>
+        #Jobs</a>
+        #Customers</a>
+        #Settings</a>
+      </div>
+    </aside>
 
-  <!-- SECONDARY NAV (grey strip) -->
-  <nav class="subnav">
-    <span>Postcode Lookup</span>
-  </nav>
-
-  <!-- MAIN -->
-  <main class="layout">
-    <!-- Hero surface (subtle gradient like screenshot) -->
-    <section class="hero">
-      <!-- Optional: you can place a faint background logo here using CSS background-image -->
-    </section>
-
-    <!-- Content area -->
-    <section class="content">
-
+    <main class="content">
       <!-- FROM (Collection) -->
-      <article class="card" id="fromSection">
+      <section class="card grid" id="fromSection">
         <h2>From (Collection)</h2>
         <div class="topbar">
           <div>
@@ -77,12 +167,12 @@
             <input id="Col_Postcode" placeholder="Type postcode and press Enter" autocomplete="off" disabled />
           </div>
         </div>
-        <!-- Summary (no 'topmatch card' wrapper) -->
+        <!-- Summary (no 'topmatch card') -->
         <div id="Col_Town" class="summary"></div>
-      </article>
+      </section>
 
       <!-- TO (Destination) -->
-      <article class="card" id="toSection">
+      <section class="card grid" id="toSection">
         <h2>To (Destination)</h2>
         <div class="topbar">
           <div>
@@ -100,12 +190,12 @@
             <input id="Del_Postcode" placeholder="Type postcode and press Enter" autocomplete="off" disabled />
           </div>
         </div>
-        <!-- Summary (no 'topmatch card' wrapper) -->
+        <!-- Summary (no 'topmatch card') -->
         <div id="Del_Town" class="summary"></div>
-      </article>
+      </section>
 
       <!-- Numbers -->
-      <article class="card" id="numbersCard">
+      <section class="card grid" id="numbersCard">
         <h2>Numbers</h2>
         <div class="numbers-grid">
           <div>
@@ -128,22 +218,150 @@
             <label for="num5">Number 5</label>
             <input id="num5" type="number" inputmode="decimal" placeholder="0" data-sum />
           </div>
-          <div class="sum-card">
+          <div class="card">
             <strong class="muted small">Sum</strong><br/>
             <span class="pill" id="sumTotal">0</span>
           </div>
         </div>
-      </article>
-    </section>
-  </main>
+      </section>
+    </main>
+  </div>
 
-  <!-- FOOTER
-  <footer class="footer">
-    © 2025 Car Solutions Ltd. All Rights Reserved.
-  </footer>
+  <script>
+  /* ========= DATA FILE MAP ========= */
+  const DATA_FILES = {
+    UK:  { file: 'postcodes_uk.json'  },
+    BEL: { file: 'postcodes_bel.json' },
+    NL:  { file: 'postcodes_nl.json'  },
+    LUX: { file: 'postcodes_lux.json' }
+  };
 
-  <!-- App JS -->
-  js/app.js</script>
+  /* ========= UTILITIES ========= */
+  const normRow = (r) => {
+    const postcode = (r.postcode ?? r.Postcode ?? '').toString().trim();
+    const region   = (r.region   ?? r.Region   ?? r['Town/Area'] ?? r.Town ?? '').toString().trim();
+    return { postcode, region };
+  };
+
+  const score = (row, q) => {
+    const p = row.postcode.toLowerCase();
+    if (p === q) return 0;
+    if (p.startsWith(q)) return 1;
+    if (p.includes(q)) return 2;
+    return 9;
+  };
+
+  function summaryHTML(row){
+    // Show nothing if no row (per your requirement)
+    if(!row) return '';
+    return `
+      <table>
+        <tr><td class="muted small">Postcode</td><td><strong>${row.postcode}</strong></td></tr>
+        <tr><td class="muted small">Town / Area</td><td>${row.region || '—'}</td></tr>
+      </table>`;
+  }
+
+  /* ========= SECTION WIRING ========= */
+  function wireSection({ countryId, postcodeId, townId }){
+    const elCountry  = document.getElementById(countryId);
+    const elPostcode = document.getElementById(postcodeId);
+    const elTown     = document.getElementById(townId);
+
+    let selectedCountry = null;
+    let dataRows = [];
+    let hits = [];
+    let committedPostcode = null;
+
+    function resetSectionUI(){
+      committedPostcode = null;
+      dataRows = [];
+      hits = [];
+      if (elPostcode){
+        elPostcode.value = '';
+        elPostcode.disabled = true;
+      }
+      if (elTown) elTown.innerHTML = ''; // show nothing
+    }
+
+    async function loadCountry(code){
+      if(!code){
+        selectedCountry = null;
+        resetSectionUI();
+        return;
+      }
+      selectedCountry = code.toUpperCase();
+      resetSectionUI();
+
+      try{
+        const meta = DATA_FILES[selectedCountry];
+        if(!meta) return;
+        const res = await fetch(meta.file, { cache:'no-store' });
+        if(!res.ok) throw new Error(`${meta.file} ${res.status}`);
+        const raw = await res.json();
+        const arr = Array.isArray(raw) ? raw : (raw.data || raw.rows || []);
+        dataRows = arr.map(normRow).filter(r => r.postcode);
+        if (elPostcode) elPostcode.disabled = false;
+      }catch(err){
+        console.error('Failed to load dataset for', selectedCountry, err);
+      }
+    }
+
+    function filter(q){
+      if(!q){ hits = []; return; }
+      const qq = q.trim().toLowerCase();
+      hits = dataRows
+        .filter(r => r.postcode && r.postcode.toLowerCase().includes(qq))
+        .sort((a,b)=> score(a,qq) - score(b,qq) || a.postcode.localeCompare(b.postcode));
+      hits = hits.slice(0,1); // top suggestion only
+    }
+
+    elCountry.addEventListener('change', ()=> loadCountry(elCountry.value));
+
+    elPostcode.addEventListener('input', ()=>{
+      const q = (elPostcode.value || '').trim();
+      filter(q);
+      elTown.innerHTML = summaryHTML(hits[0] || null);
+    });
+
+    elPostcode.addEventListener('keydown', (e)=>{
+      if(e.key !== 'Enter') return;
+      const typed = (elPostcode.value || '').trim();
+      if(!typed) return;
+
+      let chosen = dataRows.find(r => r.postcode.toLowerCase() === typed.toLowerCase());
+      if(!chosen){ filter(typed); chosen = hits[0]; }
+
+      if(chosen){
+        e.preventDefault();
+        committedPostcode = chosen.postcode;
+        elPostcode.value = committedPostcode;
+        elTown.innerHTML = summaryHTML(chosen);
+      }
+    });
+
+    resetSectionUI();
+  }
+
+  // Wire both sections (your IDs & naming conventions)
+  wireSection({ countryId:'Col_Country', postcodeId:'Col_Postcode', townId:'Col_Town' });
+  wireSection({ countryId:'Del_Country', postcodeId:'Del_Postcode', townId:'Del_Town' });
+
+  /* ========= NUMBERS SUM ========= */
+  function toNum(v){ const x = parseFloat(v); return Number.isFinite(x) ? x : 0; }
+  function updateSum(){
+    const inputs = document.querySelectorAll('input[data-sum]');
+    const sum = Array.from(inputs).reduce((acc, el)=> acc + toNum(el.value), 0);
+    const out = document.getElementById('sumTotal');
+    if (out) out.textContent = sum.toLocaleString();
+  }
+  document.addEventListener('input', (e)=>{
+    if (e.target && e.target.matches('input[data-sum]')) updateSum();
+  });
+  document.addEventListener('change', (e)=>{
+    if (e.target && e.target.matches('input[data-sum]')) updateSum();
+  });
+  updateSum(); // initial
+  </script>
 </body>
 </html>
 
