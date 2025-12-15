@@ -1,18 +1,27 @@
 
-/* ===== THEME (adjust these to match brand) ===== */
+/* ===== THEME (from your specs) ===== */
 :root{
-  --brand: #1ea1f2;        /* header accent */
-  --brand-dark: #167dbd;
+  /* Brand / bars */
+  --brand: #366697;          /* blue line / accent */
+  --brand-dark: #2f597f;     /* slightly darker for gradients (optional) */
+
+  /* Surfaces */
   --white: #ffffff;
-  --bg: #f4f7fb;           /* page background */
-  --panel: #ffffff;
-  --panel-border: #e4e8f0;
+  --bg: #ADBED2;             /* page background (light steel blue) */
+  --panel: #ffffff;          /* cards/panels */
+  --panel-border: #666666;   /* primary border color */
+  --line: #777777;           /* secondary border color / separators */
+
+  /* Text */
   --text: #222b3b;
   --muted: #64748b;
-  --line: #d6dbe6;
-  --focus: #2563eb;
-  --subnav: #4a5568;       /* grey strip */
-  --footer: #2f3b4a;
+
+  /* Focus ring */
+  --focus: #366697;          /* use brand for focus ring */
+
+  /* Bars */
+  --subnav: #366697;         /* grey/blue strip under top nav */
+  --footer: #2f3b4a;         /* footer background (keep dark for contrast) */
 }
 
 /* ===== BASE ===== */
@@ -22,7 +31,8 @@ body{
   margin:0;
   background:var(--bg);
   color:var(--text);
-  font:16px/1.5 "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  /* Use your requested font stack */
+  font:16px/1.5 "Arial Narrow", Arial, Helvetica, sans-serif;
 }
 a{color:inherit;text-decoration:none}
 
@@ -30,13 +40,16 @@ a{color:inherit;text-decoration:none}
 .header{
   display:flex; align-items:center; justify-content:space-between;
   gap:16px; padding:10px 16px; background:var(--white);
-  border-bottom:1px solid var(--panel-border);
+  /* Use your border colors */
+  border-bottom:1px solid var(--panel-border);      /* #666666 */
   position:sticky; top:0; z-index:100;
 }
 .header__brand{display:flex; align-items:center; gap:10px}
 .logo{
   width:38px; height:38px; border-radius:8px;
-  background:linear-gradient(0deg, var(--brand), var(--brand-dark));
+  /* Solid brand instead of gradient, to match “blue line” vibe */
+  background:var(--brand);
+  border:1px solid var(--panel-border);            /* #666666 */
 }
 .brand-text{font-weight:600; letter-spacing:.2px}
 .header__right{display:flex; align-items:center; gap:12px}
@@ -44,59 +57,72 @@ a{color:inherit;text-decoration:none}
 .header-icons{display:flex; gap:10px}
 .icon{display:inline-flex; align-items:center; justify-content:center}
 
-/* ===== TOP NAV (white) ===== */
+/* ===== TOP NAV (white strip) ===== */
 .topnav{
   display:flex; flex-wrap:wrap; gap:8px; padding:8px 16px; background:var(--white);
+  /* Bottom border line: use #666666 to echo your spec */
   border-bottom:1px solid var(--panel-border);
 }
 .topnav a{
-  padding:8px 10px; border-radius:8px; color:#344153;
+  padding:8px 10px; border-radius:6px; color:#344153;
+  border:1px solid transparent;
 }
 .topnav a.active, .topnav a:hover{
-  background:#eef4ff; border:1px solid #cfe1ff;
+  background:#eef4ff;
+  border-color: var(--line);                        /* #777777 */
 }
 
-/* ===== SUB NAV (grey strip) ===== */
+/* ===== SUB NAV (blue line with bottom border) ===== */
 .subnav{
-  background:var(--subnav); color:#fff; padding:8px 16px;
-  border-bottom:1px solid rgba(255,255,255,.15);
+  background:var(--subnav);                         /* #366697 */
+  color:#fff; padding:8px 16px;
+  /* “bottom border, border:1px solid #666666” */
+  border-bottom:1px solid var(--panel-border);      /* #666666 */
 }
 
 /* ===== LAYOUT ===== */
 .layout{max-width:1200px; margin:20px auto 40px; padding:0 16px}
 .hero{
   min-height:140px;
-  background:linear-gradient(180deg, #eaf4ff 0%, #f7fbff 100%);
-  border:1px solid var(--panel-border);
+  /* Subtle overlay so blue background feels lighter */
+  background:linear-gradient(180deg, rgba(255,255,255,.7), rgba(255,255,255,.9));
+  border:1px solid var(--line);                     /* #777777 */
   border-radius:12px;
 }
 .content{display:grid; gap:16px; margin-top:16px}
+
+/* ===== CARDS / FORMS ===== */
 .card{
-  background:var(--panel); border:1px solid var(--panel-border);
+  background:var(--panel); 
+  border:1px solid var(--panel-border);             /* #666666 */
   border-radius:12px; padding:14px;
 }
 h2{font-size:18px; margin:0 0 12px}
 label{display:block; font-size:12px; color:var(--muted); margin-bottom:6px}
 input,select{
-  width:100%; padding:10px 12px; border-radius:10px;
-  border:1px solid var(--panel-border); background:#fff; color:var(--text); outline:none;
+  width:100%; padding:10px 12px; border-radius:8px;
+  border:1px solid var(--panel-border);             /* #666666 */
+  background:#fff; color:var(--text); outline:none;
 }
 input:focus,select:focus{
-  border-color:var(--focus); box-shadow:0 0 0 3px rgba(37,99,235,.15);
+  border-color:var(--focus);
+  box-shadow:0 0 0 3px rgba(54,102,151,.18);        /* brand focus ring */
 }
 .topbar{display:grid; grid-template-columns:1fr 1fr; gap:12px}
 .summary{margin-top:8px}
 .small{font-size:12px}
 .muted{color:var(--muted)}
 
+/* ===== Numbers ===== */
 .numbers-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
 .sum-card{
-  background:#f9fbff; border:1px solid var(--panel-border);
+  background:#f9fbff; 
+  border:1px solid var(--panel-border);             /* #666666 */
   border-radius:12px; padding:12px;
 }
 .pill{
   display:inline-grid; grid-auto-flow:column; gap:8px; align-items:center;
-  padding:8px 10px; border:1px solid var(--panel-border);
+  padding:8px 10px; border:1px solid var(--line);   /* #777777 */
   border-radius:999px; background:#fafbff; color:var(--muted)
 }
 
@@ -108,6 +134,5 @@ input:focus,select:focus{
 
 /* ===== RESPONSIVE ===== */
 @media (max-width:900px){
-  .topbar, .numbers-grid{grid-template-columns:1fr}
-}
-``
+  .topbar, .numbers-grid{grid-template-columns:1  .topbar, .numbers-grid{grid-template-columns:1fr}
+
