@@ -1,263 +1,267 @@
-<!DOCTYPE html>
+
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Country & Postcode Selector + Sum</title>
+  <title>Postcode Portal</title>
   <style>
-    :root {
-      --bg: #0f172a;
-      --card: #111827;
-      --text: #e5e7eb;
-      --muted: #9ca3af;
-      --accent: #60a5fa;
-      --danger: #ef4444;
+    :root{
+      --bg:#0b1220; --card:#121a2b; --muted:#a8b3cf; --text:#e8eeff; --accent:#60a5fa;
+      --ok:#22c55e; --warn:#f59e0b; --err:#ef4444; --line:#22314f;
     }
-    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; background:#0f172a; color:var(--text); min-height:100vh; display:grid; place-items:center; padding:2rem; }
-    .container { width:100%; max-width:900px; background:#0b1224; border:1px solid rgba(255,255,255,0.08); border-radius:16px; box-shadow:0 8px 40px rgba(0,0,0,0.35); padding:1.5rem; }
-    h1 { font-size:1.4rem; margin:0 0 1rem; }
-    .grid { display:grid; gap:1rem; }
-    @media (min-width: 700px) { .grid-2 { grid-template-columns: 1fr 1fr; } .grid-3 { grid-template-columns: repeat(3, 1fr); } }
-    .field { display:flex; flex-direction:column; gap:0.4rem; }
-    label { font-size:0.95rem; color:var(--muted); }
-    input[type="text"], input[type="number"] { width:100%; padding:0.65rem 0.75rem; border-radius:10px; border:1px solid rgba(255,255,255,0.12); background:#0b1224; color:var(--text); outline:none; }
-    input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(96,165,250,0.2); }
-    .search-select { position:relative; }
-    .search-select input { padding-right:2.2rem; }
-    .search-select .clear { position:absolute; right:0.45rem; top:50%; transform:translateY(-50%); cursor:pointer; color:var(--muted); font-weight:700; user-select:none; }
-    .options { margin-top:0.4rem; max-height:220px; overflow:auto; border:1px solid rgba(255,255,255,0.12); border-radius:10px; background:#0b1224; }
-    .option { padding:0.55rem 0.75rem; cursor:pointer; }
-    .option:hover, .option[aria-selected="true"] { background: rgba(96,165,250,0.15); }
-    .error { color:var(--danger); font-size:0.85rem; margin-top:-0.2rem; min-height:1.2em; }
-    .total { font-size:1.1rem; font-weight:600; }
-    .btn { padding:0.6rem 0.9rem; border-radius:10px; border:1px solid rgba(255,255,255,0.12); background:#0b1224; color:var(--text); cursor:pointer; }
-    .btn:hover { border-color: var(--accent); }
-    .helper { font-size:0.85rem; color:var(--muted); }
-    table { border-collapse: collapse; width:100%; font-size:0.9rem; }
-    th, td { border-bottom: 1px solid rgba(255,255,255,0.08); padding:0.4rem 0.2rem; text-align:left; }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 system-ui,Segoe UI,Roboto,Arial}
+    .wrap{max-width:1100px;margin:0 auto;padding:20px;display:grid;gap:16px}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+    h1{font-size:20px;margin:0 0 8px}
+    label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+    input,select{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:#0e1729;color:var(--text);outline:none}
+    input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(96,165,250,.25)}
+    .pill{display:inline-grid;grid-auto-flow:column;gap:8px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.03);color:var(--muted)}
+    .muted{color:var(--muted)}
+    .grid{display:grid;gap:10px}
+    .topbar{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .topmatch{display:grid;gap:8px}
+    .topmatch table{width:100%;border-collapse:collapse}
+    .topmatch td{border-top:1px solid var(--line);padding:8px 0}
+    .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+    .kpi .card{padding:16px}
+    .kpi h3{margin:0 0 8px;font-size:12px;color:var(--muted);font-weight:600}
+    .kpi .val{font-size:22px}
+    .small{font-size:12px}
+    .sticky-dup{position:sticky;top:0;background:linear-gradient(#0b1220, #0b1220ee);z-index:10;padding-top:8px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+    @media (max-width:840px){
+      .row,.topbar,.kpi{grid-template-columns:1fr}
+    }
   </style>
 </head>
 <body>
-  <div class="container" role="main">
-    <h1>Public Postcode Portal</h1>
-    <p class="helper">Select a country, then search for a postcode. Enter up to five numbers to see a live total.</p>
+  <div class="wrap">
 
-    <section class="grid grid-2" aria-label="Location selectors">
-      <div class="field">
-        <label for="countrySearch">Country</label>
-        <div class="search-select" id="countrySelect" aria-haspopup="listbox">
-          <input id="countrySearch" type="text" role="combobox" aria-expanded="true" autocomplete="off" placeholder="Type to search (e.g., UK, Netherlands)" />
-          <span class="clear" title="Clear" aria-label="Clear country">×</span>
-          <div class="options" id="countryOptions" role="listbox" aria-label="Country options"></div>
+    <!-- PRIMARY TOP SECTION -->
+    <div class="card grid" id="primaryTop">
+      <h1>Lookup</h1>
+      <div class="topbar">
+        <div>
+          <label for="countrySearch">Country (UK / BEL / NL / LUX)</label>
+          <input id="countrySearch" list="countryList" placeholder="Type UK, BEL, NL, or LUX and press Enter" autocomplete="off" />
+          <datalist id="countryList"></datalist>
+        </div>
+        <div>
+          <label for="postcodeSearch">Postcode</label>
+          <input id="postcodeSearch" placeholder="Start typing a postcode and press Enter" autocomplete="off" disabled />
         </div>
       </div>
 
-      <div class="field">
-        <label for="postcodeSearch">Postcode</label>
-        <div class="search-select" id="postcodeSelect" aria-haspopup="listbox">
-          <input id="postcodeSearch" type="text" role="combobox" aria-expanded="true" autocomplete="off" placeholder="Select country first, then type to search postcode" disabled />
-          <span class="clear" title="Clear" aria-label="Clear postcode">×</span>
-          <div class="options" id="postcodeOptions" role="listbox" aria-label="Postcode options"></div>
+      <div class="topmatch card">
+        <div class="pill"><span>Top matching row</span><span id="matchCount" class="muted"></span></div>
+        <div id="topMatchPrimary">
+          <div class="muted small">No match yet — start typing a postcode</div>
         </div>
-        <div id="postcodeError" class="error" aria-live="polite"></div>
       </div>
-    </section>
+    </div>
 
-    <section style="margin-top: 0.75rem;" class="grid grid-2">
-      <div class="field">
-        <label for="searchTown">Filter by Town/Area (UK only)</label>
-        <input id="searchTown" type="text" placeholder="Optional town/area filter for UK dataset" disabled />
-      </div>
-      <div class="field">
-        <label>Selected details</label>
-        <div id="details" class="helper">—</div>
-      </div>
-    </section>
-
-    <section class="grid grid-3" style="margin-top: 1rem;" aria-label="Totals">
-      <div class="field"><label for="n1">Number 1</label><input id="n1" type="text" inputmode="decimal" placeholder="e.g., 10 or 1,250.5" /></div>
-      <div class="field"><label for="n2">Number 2</label><input id="n2" type="text" inputmode="decimal" placeholder="e.g., 5" /></div>
-      <div class="field"><label for="n3">Number 3</label><input id="n3" type="text" inputmode="decimal" placeholder="optional" /></div>
-      <div class="field"><label for="n4">Number 4</label><input id="n4" type="text" inputmode="decimal" placeholder="optional" /></div>
-      <div class="field"><label for="n5">Number 5</label><input id="n5" type="text" inputmode="decimal" placeholder="optional" /></div>
-    </section>
-
-    <section style="margin-top: 0.5rem; display:flex; gap:1rem; align-items:center;">
-      <div class="total" id="totalDisplay" aria-live="polite">Total: 0</div>
-      <button class="btn" id="clearNumbers">Clear numbers</button>
-    </section>
-
-    <section style="margin-top:1rem;">
-      <details>
-        <summary>Show matching rows (UK)</summary>
-        <div style="max-height:260px; overflow:auto; margin-top:0.5rem;">
-          <table id="resultsTable" aria-label="Matching UK rows">
-            <thead><tr><th>Postcode</th><th>Town/Area</th><th>Region</th><th>Collection Zone</th><th>Delivery Zone</th></tr></thead>
-            <tbody></tbody>
-          </table>
+    <!-- DUPLICATED TOP SECTION ABOVE NUMBERS -->
+    <div class="sticky-dup">
+      <div class="row">
+        <div class="card">
+          <strong class="muted small">Country / Postcode</strong><br/>
+          <span id="dupCountry" class="pill">—</span>
+          <span id="dupPostcode" class="pill">—</span>
         </div>
-      </details>
-    </section>
+        <div class="card" id="topMatchSecondary">
+          <strong class="muted small">Top matching row</strong>
+          <div class="muted small">—</div>
+        </div>
+      </div>
+    </div>
 
-    <footer class="helper" style="margin-top:1rem;">Data: UK postcodes (JSON). Netherlands support via free entry + format check; supply a list later to enable dropdown.</footer>
+    <!-- NUMBERS / KPIs (your existing area; keep as-is if you have one) -->
+    <div class="kpi">
+      <div class="card"><h3>Total records (loaded)</h3><div class="val" id="statTotal">0</div></div>
+      <div class="card"><h3>Country</h3><div class="val" id="statCountry">—</div></div>
+      <div class="card"><h3>Postcode committed</h3><div class="val" id="statPostcode">—</div></div>
+      <div class="card"><h3>Search hits (current)</h3><div class="val" id="statHits">0</div></div>
+    </div>
+
+    <!-- You can keep your table/results section below if you like. -->
   </div>
 
-  <script>
-    const COUNTRIES = ["UK", "Netherlands"]; // extend later
+<script>
+/** ==================== CONFIG ==================== **/
 
-    let UK_DATA = [];
-    let selectedCountry = null;
-    let selectedPostcode = null;
+// Country list limited to your four choices:
+const COUNTRIES = [
+  { code: 'UK',  name: 'United Kingdom', data: 'postcodes_uk.json'  },
+  { code: 'BEL', name: 'Belgium',        data: 'postcodes_bel.json' },
+  { code: 'NL',  name: 'Holland',        data: 'postcodes_nl.json'  },
+  { code: 'LUX', name: 'Luxembourg',     data: 'postcodes_lux.json' }
+];
 
-    const countrySearch = document.getElementById('countrySearch');
-    const countryOptions = document.getElementById('countryOptions');
-    const countryClear = document.querySelector('#countrySelect .clear');
+// DOM handles
+const countrySearch   = document.getElementById('countrySearch');
+const countryList     = document.getElementById('countryList');
+const postcodeSearch  = document.getElementById('postcodeSearch');
+const topMatchPrimary = document.getElementById('topMatchPrimary');
+const topMatchSecondary = document.getElementById('topMatchSecondary');
+const matchCount      = document.getElementById('matchCount');
+const statTotal       = document.getElementById('statTotal');
+const statCountry     = document.getElementById('statCountry');
+const statPostcode    = document.getElementById('statPostcode');
+const statHits        = document.getElementById('statHits');
+const dupCountry      = document.getElementById('dupCountry');
+const dupPostcode     = document.getElementById('dupPostcode');
 
-    const postcodeSearch = document.getElementById('postcodeSearch');
-    const postcodeOptions = document.getElementById('postcodeOptions');
-    const postcodeClear = document.querySelector('#postcodeSelect .clear');
-    const postcodeError = document.getElementById('postcodeError');
+// Build datalist
+COUNTRIES.forEach(c => {
+  const opt = document.createElement('option');
+  opt.value = c.code;
+  opt.label = `${c.code} – ${c.name}`;
+  countryList.appendChild(opt);
+});
 
-    const searchTown = document.getElementById('searchTown');
-    const details = document.getElementById('details');
+// State
+let selectedCountry = null;      // 'UK' | 'BEL' | 'NL' | 'LUX'
+let dataRows = [];               // normalized {postcode, region}
+let currentHits = [];            // latest filtered list
+let committedPostcode = null;    // string
 
-    const resultsTableBody = document.querySelector('#resultsTable tbody');
+/** ==================== HELPERS ==================== **/
 
-    function filterOptions(query, options) {
-      const q = (query || '').trim().toLowerCase();
-      if (!q) return options.slice(0,250); // cap initial list for performance
-      return options.filter(o => o.toLowerCase().includes(q)).slice(0,250);
-    }
+function normalizeRow(r){
+  // Accept both our new JSON ({postcode, region}) and the old UK JSON shape
+  const postcode = (r.postcode ?? r.Postcode ?? r.code ?? r.pc ?? '').toString().trim();
+  const region   = (r.region   ?? r.Region   ?? r.Town ?? r['Town/Area'] ?? r.Area ?? '').toString().trim();
+  return { postcode, region };
+}
 
-    function renderOptions(el, arr, onPick) {
-      el.innerHTML = '';
-      arr.forEach((item, idx) => {
-        const div = document.createElement('div');
-        div.className = 'option';
-        div.setAttribute('role','option');
-        div.setAttribute('data-index', idx);
-        div.textContent = item;
-        div.addEventListener('click', () => onPick(item));
-        el.appendChild(div);
-      });
-    }
+function renderTopMatch(targetEl, row){
+  if(!row){
+    targetEl.innerHTML = `<div class="muted small">No match</div>`;
+    return;
+  }
+  targetEl.innerHTML = `
+    <table>
+      <tr><td class="muted small">Postcode</td><td><strong>${row.postcode}</strong></td></tr>
+      <tr><td class="muted small">Town / Area</td><td>${row.region || '—'}</td></tr>
+    </table>
+  `;
+}
 
-    function isValidUK(postcode) {
-      const re = /^([A-Z]{1,2}[0-9][0-9A-Z]?)[ ]?([0-9][A-Z]{2})$/i; // general UK
-      // Note: dataset contains districts (e.g., AB10). We'll accept those too:
-      const district = /^[A-Z]{1,2}[0-9][0-9A-Z]?$/i;
-      return re.test(postcode) || district.test(postcode);
-    }
+function updateStats(){
+  statTotal.textContent    = dataRows.length.toLocaleString();
+  statCountry.textContent  = selectedCountry ?? '—';
+  statPostcode.textContent = committedPostcode ?? '—';
+  statHits.textContent     = currentHits.length.toLocaleString();
+  dupCountry.textContent   = selectedCountry ?? '—';
+  dupPostcode.textContent  = committedPostcode ?? '—';
+}
 
-    function isValidNL(postcode) {
-      const re = /^[1-9][0-9]{3}\s?[A-Z]{2}$/i; // NL format like 1011 AB
-      return re.test(postcode);
-    }
+function score(row, q){
+  // Prefer startsWith; then includes. Lower is better (0 = best)
+  const p = row.postcode.toLowerCase();
+  if (p === q) return 0;
+  if (p.startsWith(q)) return 1;
+  if (p.includes(q)) return 2;
+  return 9;
+}
 
-    async function loadUK() {
-      const res = await fetch('postcodes_uk.json');
-      UK_DATA = await res.json();
-    }
+function filterPostcodes(q){
+  if(!q){ currentHits = []; return; }
+  const qq = q.trim().toLowerCase();
+  currentHits = dataRows
+    .filter(r => r.postcode.toLowerCase().includes(qq))
+    .sort((a,b)=> score(a,qq) - score(b,qq) || a.postcode.localeCompare(b.postcode))
+    .slice(0, 100); // cap for perf
+}
 
-    function updateCountryList() {
-      const filtered = filterOptions(countrySearch.value, COUNTRIES);
-      renderOptions(countryOptions, filtered, (value) => {
-        selectedCountry = value;
-        countrySearch.value = value;
-        postcodeSearch.disabled = false;
-        postcodeSearch.placeholder = `Type to search ${value} postcode`;
-        searchTown.disabled = value !== 'UK';
-        selectedPostcode = null;
-        postcodeSearch.value = '';
-        postcodeError.textContent = '';
-        details.textContent = '—';
-        updatePostcodeList();
-        refreshTable();
-      });
-    }
+/** ==================== LOADERS ==================== **/
 
-    function updatePostcodeList() {
-      let pool = [];
-      if (selectedCountry === 'UK') {
-        const qTown = searchTown.value.trim().toLowerCase();
-        pool = UK_DATA
-          .filter(r => !qTown || String(r.townArea||'').toLowerCase().includes(qTown))
-          .map(r => r.postcode);
-      } else if (selectedCountry === 'Netherlands') {
-        // If you provide a NL list later, populate pool here
-        pool = []; // keep empty for now
-      }
-      const unique = Array.from(new Set(pool));
-      const filtered = filterOptions(postcodeSearch.value, unique);
-      renderOptions(postcodeOptions, filtered, (value) => {
-        selectedPostcode = value;
-        postcodeSearch.value = value;
-        validatePostcode(value);
-        showDetails(value);
-        refreshTable();
-      });
-    }
+async function loadCountry(code){
+  const item = COUNTRIES.find(c => c.code.toLowerCase() === code.toLowerCase());
+  if(!item) return;
+  selectedCountry = item.code;
+  statCountry.textContent = selectedCountry;
+  dupCountry.textContent = selectedCountry;
+  countrySearch.value = selectedCountry;
 
-    function validatePostcode(value) {
-      if (!selectedCountry) return;
-      const v = (value||'').trim();
-      let ok = false;
-      if (selectedCountry === 'UK') ok = isValidUK(v);
-      if (selectedCountry === 'Netherlands') ok = isValidNL(v);
-      postcodeError.textContent = v && !ok ? `Invalid ${selectedCountry} postcode format` : '';
-    }
+  // Load JSON
+  dataRows = [];
+  renderTopMatch(topMatchPrimary, null);
+  renderTopMatch(topMatchSecondary, null);
+  committedPostcode = null;
+  postcodeSearch.value = '';
+  postcodeSearch.disabled = true;
+  updateStats();
 
-    function showDetails(value) {
-      if (selectedCountry !== 'UK') { details.textContent = '—'; return; }
-      const rows = UK_DATA.filter(r => r.postcode === value);
-      if (rows.length) {
-        const r = rows[0];
-        details.textContent = `${r.postcode} — ${r.townArea || 'n/a'} — ${r.region || 'n/a'} — Col ${r.collectionZone || 'n/a'} / Del ${r.deliveryZone || 'n/a'}`;
-      } else {
-        details.textContent = '—';
-      }
-    }
+  try{
+    const res = await fetch(item.data, { cache: 'no-store' });
+    const raw = await res.json();
+    dataRows = (Array.isArray(raw) ? raw : []).map(normalizeRow)
+      .filter(r => r.postcode && r.region != null);
+    postcodeSearch.disabled = false;
+  }catch(e){
+    console.error('Failed to load data for', item.code, e);
+  }
+  updateStats();
+}
 
-    function refreshTable() {
-      if (selectedCountry !== 'UK') { resultsTableBody.innerHTML = ''; return; }
-      const qTown = searchTown.value.trim().toLowerCase();
-      const qPC = (postcodeSearch.value||'').trim().toLowerCase();
-      const rows = UK_DATA.filter(r =>
-        (!qTown || String(r.townArea||'').toLowerCase().includes(qTown)) &&
-        (!qPC || String(r.postcode||'').toLowerCase().includes(qPC))
-      ).slice(0,200);
-      resultsTableBody.innerHTML = rows.map(r => `<tr><td>${r.postcode}</td><td>${r.townArea||''}</td><td>${r.region||''}</td><td>${r.collectionZone||''}</td><td>${r.deliveryZone||''}</td></tr>`).join('');
-    }
+/** ==================== ENTER-TO-COMMIT HANDLERS ==================== **/
 
-    countrySearch.addEventListener('input', updateCountryList);
-    countryClear.addEventListener('click', () => {
-      selectedCountry = null; countrySearch.value=''; updateCountryList();
-      selectedPostcode = null; postcodeSearch.value=''; postcodeSearch.disabled=true; postcodeOptions.innerHTML=''; postcodeError.textContent=''; details.textContent='—';
-      searchTown.value=''; searchTown.disabled=true; refreshTable();
-    });
+// Country: Enter commits exact or first suggestion (we restrict to known codes)
+countrySearch.addEventListener('keydown', (e)=>{
+  if(e.key !== 'Enter') return;
+  const typed = (countrySearch.value || '').trim().toUpperCase();
+  const exact = COUNTRIES.find(c => c.code === typed);
+  const pick  = exact || COUNTRIES.find(c => c.code.startsWith(typed));
+  if (pick){
+    e.preventDefault();
+    loadCountry(pick.code);
+  }
+});
 
-    postcodeSearch.addEventListener('input', () => {
-      updatePostcodeList();
-      if (postcodeSearch.value && selectedCountry) validatePostcode(postcodeSearch.value); else postcodeError.textContent='';
-      showDetails(postcodeSearch.value);
-      refreshTable();
-    });
-    postcodeClear.addEventListener('click', () => { selectedPostcode=null; postcodeSearch.value=''; updatePostcodeList(); postcodeError.textContent=''; showDetails(''); refreshTable(); });
+// Postcode: Enter commits (1) exact match; else (2) top suggestion
+postcodeSearch.addEventListener('input', ()=>{
+  const q = (postcodeSearch.value || '').trim();
+  filterPostcodes(q);
+  matchCount.textContent = currentHits.length ? `(${currentHits.length} hits)` : '';
+  const first = currentHits[0] || null;
+  renderTopMatch(topMatchPrimary, first);
+  renderTopMatch(topMatchSecondary, first);
+  updateStats();
+});
 
-    searchTown.addEventListener('input', () => { updatePostcodeList(); refreshTable(); });
+postcodeSearch.addEventListener('keydown', (e)=>{
+  if(e.key !== 'Enter') return;
+  const typed = (postcodeSearch.value || '').trim();
+  if(!typed) return;
 
-    // Numbers total
-    const numIds = ['n1','n2','n3','n4','n5'];
-    const clearBtn = document.getElementById('clearNumbers');
-    const totalDisplay = document.getElementById('totalDisplay');
-    function parseNumberLike(str) { if(!str) return 0; const s = String(str).replace(/,/g,'').trim(); const n = Number(s); return Number.isFinite(n)?n:0; }
-    function updateTotal(){ const total = numIds.map(id => parseNumberLike(document.getElementById(id).value)).reduce((a,b)=>a+b,0); totalDisplay.textContent = `Total: ${total}`; }
-    numIds.forEach(id => document.getElementById(id).addEventListener('input', updateTotal));
-    clearBtn.addEventListener('click', () => { numIds.forEach(id => document.getElementById(id).value=''); updateTotal(); });
-    updateTotal();
+  const typedLower = typed.toLowerCase();
+  // 1) exact
+  let chosen = dataRows.find(r => r.postcode.toLowerCase() === typedLower);
+  // 2) else top suggestion
+  if(!chosen){
+    filterPostcodes(typed);
+    chosen = currentHits[0];
+  }
 
-    // Init
-    loadUK().then(()=>{ updateCountryList(); });
-  </script>
+  if(chosen){
+    e.preventDefault();
+    committedPostcode = chosen.postcode;
+    postcodeSearch.value = committedPostcode; // normalize spacing/case
+    renderTopMatch(topMatchPrimary, chosen);
+    renderTopMatch(topMatchSecondary, chosen);
+    updateStats();
+  }
+});
+
+/** ==================== INIT ==================== **/
+
+// Default to UK on first load
+loadCountry('UK');
+
+</script>
 </body>
-</html>
+</
