@@ -91,7 +91,7 @@
 
 
 <script>
-// ================= CONFIG =================
+/** ===== Country aliases (names and codes) ===== **/
 const DATA_FILES = {
   UK:  { label: 'United Kingdom', file: 'postcodes_uk.json'  },
   BEL: { label: 'Belgium',        file: 'postcodes_bel.json' },
@@ -99,61 +99,47 @@ const DATA_FILES = {
   LUX: { label: 'Luxembourg',     file: 'postcodes_lux.json' }
 };
 
-const COUNTRIES = Object.entries(DATA_FILES).map(([code, v]) => ({ code, name: v.label, data: v.file }));
+// Accept both codes and names (case-insensitive)
+const COUNTRY_ALIASES = new Map([
+  ['UK', 'UK'], ['UNITED KINGDOM', 'UK'],
+  ['BEL', 'BEL'], ['BELGIUM', 'BEL'],
+  ['NL', 'NL'], ['NETHERLANDS', 'NL'], ['HOLLAND', 'NL'],
+  ['LUX', 'LUX'], ['LUXEMBOURG', 'LUX']
+]);
 
-// DOM references (reuse your existing ones if they already exist)
-const countrySearch   = document.getElementById('countrySearch');
-const countryList     = document.getElementById('countryList');
-const postcodeSearch  = document.getElementById('postcodeSearch');
-const topMatchPrimary = document.getElementById('topMatchPrimary');
-const topMatchSecondary = document.getElementById('topMatchSecondary');
-const matchCount      = document.getElementById('matchCount');
-const statTotal       = document.getElementById('statTotal');
-const statCountry     = document.getElementById('statCountry');
-const statPostcode    = document.getElementById('statPostcode');
-const statHits        = document.getElementById('statHits');
-const dupCountry      = document.getElementById('dupCountry');
-const dupPostcode     = document.getElementById('dupPostcode');
+// If you already populate the datalist, you can keep it.
+// (Optional) Update its labels to show names + codes:
+const countryList = document.getElementById('countryList');
+if (countryList) {
+  countryList.innerHTML = '';
+  Object.entries(DATA_FILES).forEach(([code, v]) => {
+    const opt = document.createElement('option');
+    opt.value = code;
+    opt.label = `${code} – ${v.label}`;
+    countryList.appendChild(opt);
+  });
+}
 
-// Build datalist (limited to the four codes)
-countryList.innerHTML = '';
-COUNTRIES.forEach(c => {
-  const opt = document.createElement('option');
-  opt.value = c.code;
-  opt.label = `${c.code} – ${c.name}`;
-  countryList.appendChild(opt);
-});
-
-// ================= STATE =================
+/** ===== State ===== **/
 let selectedCountry = null;   // 'UK' | 'BEL' | 'NL' | 'LUX'
-let dataRows = [];            // array<{postcode, region}>
-let currentHits = [];         // filtered results for current query
-let committedPostcode = null; // last committed postcode string
+let dataRows = [];            // current country rows
+let currentHits = [];
+let committedPostcode = null;
 
-// ================= HELPERS =================
+/** ===== Helpers ===== **/
 function normalizeRow(r){
-  // Cope with UK (whatever shape you had before) and new JSONs (postcode, region)
   const postcode = (r.postcode ?? r.Postcode ?? r.code ?? r.pc ?? '').toString().trim();
   const region   = (r.region   ?? r.Region   ?? r['Town/Area'] ?? r.Town ?? r.Area ?? '').toString().trim();
   return { postcode, region };
 }
 
 function renderTopMatch(targetEl, row){
-  if(!row){ targetEl.innerHTML = `<div class="muted small">No match</div>`; return; }
-  targetEl.innerHTML = `
+  if(!targetEl) return;
+  targetEl.innerHTML = row ? `
     <table>
       <tr><td class="muted small">Postcode</td><td><strong>${row.postcode}</strong></td></tr>
       <tr><td class="muted small">Town / Area</td><td>${row.region || '—'}</td></tr>
-    </table>`;
-}
-
-function updateStats(){
-  statTotal.textContent    = dataRows.length.toLocaleString();
-  statCountry.textContent  = selectedCountry ?? '—';
-  statPostcode.textContent = committedPostcode ?? '—';
-  statHits.textContent     = currentHits.length.toLocaleString();
-  dupCountry.textContent   = selectedCountry ?? '—';
-  dupPostcode.textContent  = committedPostcode ?? '—';
+    </table>` : `<div class="muted small">No match</div>`;
 }
 
 function score(row, q){
@@ -173,80 +159,117 @@ function filterPostcodes(q){
     .slice(0, 100);
 }
 
-// ================= LOADER =================
+/** ===== Loader ===== **/
 async function loadCountry(code){
   const item = DATA_FILES[code.toUpperCase()];
-  if(!item){ console.warn('Unknown country code', code); return; }
+  if(!item) return;
 
+  // Reset state so postcode search always points at the selected country
   selectedCountry = code.toUpperCase();
-  committedPostcode = null;
-  postcodeSearch.value = '';
-  postcodeSearch.disabled = true;
   dataRows = [];
   currentHits = [];
+  committedPostcode = null;
+
+  // Reset UI pieces tied to postcode
+  const postcodeSearch  = document.getElementById('postcodeSearch');
+  const topMatchPrimary = document.getElementById('topMatchPrimary');
+  const topMatchSecondary = document.getElementById('topMatchSecondary');
+  const statTotal = document.getElementById('statTotal');
+  const statCountry = document.getElementById('statCountry');
+  const statPostcode = document.getElementById('statPostcode');
+  const statHits = document.getElementById('statHits');
+  const dupCountry = document.getElementById('dupCountry');
+  const dupPostcode = document.getElementById('dupPostcode');
+
   renderTopMatch(topMatchPrimary, null);
   renderTopMatch(topMatchSecondary, null);
-  updateStats();
 
+  if (postcodeSearch){
+    postcodeSearch.value = '';
+    postcodeSearch.disabled = true;
+  }
+
+  // Load dataset for this country
   try {
-    // IMPORTANT: path is relative to index.html. Adjust if your JSON lives elsewhere.
     const res = await fetch(item.file, { cache: 'no-store' });
-    if(!res.ok) throw new Error(`${item.file} ${res.status}`);
     const raw = await res.json();
-    // Accept array or object-wrapped arrays
     const arr = Array.isArray(raw) ? raw : (raw.data || raw.rows || []);
     dataRows = arr.map(normalizeRow).filter(r => r.postcode);
-    postcodeSearch.disabled = false;
-  } catch(err){
-    console.error('Failed to load dataset for', code, err);
+    if (postcodeSearch) postcodeSearch.disabled = false;
+  } catch (err) {
+    console.error('Failed to load data for', selectedCountry, err);
   }
 
-  // Reflect in UI
-  countrySearch.value = selectedCountry;
-  updateStats();
+  // Update stats / badges
+  if (statTotal)    statTotal.textContent   = dataRows.length.toLocaleString();
+  if (statCountry)  statCountry.textContent = selectedCountry;
+  if (statPostcode) statPostcode.textContent= '—';
+  if (statHits)     statHits.textContent    = '0';
+  if (dupCountry)   dupCountry.textContent  = selectedCountry;
+  if (dupPostcode)  dupPostcode.textContent = '—';
+
+  // Reflect chosen country into the input (normalized code)
+  const countrySearch = document.getElementById('countrySearch');
+  if (countrySearch) countrySearch.value = selectedCountry;
 }
 
-// ================= ENTER-TO-COMMIT =================
-countrySearch.addEventListener('keydown', (e)=>{
-  if(e.key !== 'Enter') return;
-  const typed = (countrySearch.value || '').trim().toUpperCase();
-  // exact code; else find by startsWith
-  const exact = DATA_FILES[typed] ? typed : null;
-  const starts = exact || Object.keys(DATA_FILES).find(k => k.startsWith(typed));
-  if(starts){ e.preventDefault(); loadCountry(starts); }
-});
+/** ===== Commit country on Enter OR blur ===== **/
+function commitCountry(rawInput){
+  if(!rawInput) return;
+  const key = rawInput.trim().toUpperCase();
+  const code = COUNTRY_ALIASES.get(key)
+            || Object.keys(DATA_FILES).find(k => k.startsWith(key));
+  if (code) loadCountry(code);
+}
 
-postcodeSearch.addEventListener('input', ()=>{
-  const q = (postcodeSearch.value || '').trim();
-  filterPostcodes(q);
-  matchCount.textContent = currentHits.length ? `(${currentHits.length} hits)` : '';
-  const first = currentHits[0] || null;
-  renderTopMatch(topMatchPrimary, first);
-  renderTopMatch(topMatchSecondary, first);
-  updateStats();
-});
+// Hook up events (keep if you already have similar listeners)
+const countrySearch = document.getElementById('countrySearch');
+if (countrySearch){
+  countrySearch.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter') { e.preventDefault(); commitCountry(countrySearch.value); }
+  });
+  countrySearch.addEventListener('blur', ()=>{
+    // Also commit when the user leaves the field
+    commitCountry(countrySearch.value);
+  });
+}
 
-postcodeSearch.addEventListener('keydown', (e)=>{
-  if(e.key !== 'Enter') return;
-  const typed = (postcodeSearch.value || '').trim();
-  if(!typed) return;
+// Postcode events (country-dependent filter)
+const postcodeSearch = document.getElementById('postcodeSearch');
+const matchCount = document.getElementById('matchCount');
+const topMatchPrimary = document.getElementById('topMatchPrimary');
+const topMatchSecondary = document.getElementById('topMatchSecondary');
+if (postcodeSearch){
+  postcodeSearch.addEventListener('input', ()=>{
+    const q = (postcodeSearch.value || '').trim();
+    filterPostcodes(q);
+    if (matchCount) matchCount.textContent = currentHits.length ? `(${currentHits.length} hits)` : '';
+    const first = currentHits[0] || null;
+    renderTopMatch(topMatchPrimary, first);
+    renderTopMatch(topMatchSecondary, first);
+  });
+  postcodeSearch.addEventListener('keydown', (e)=>{
+    if(e.key !== 'Enter') return;
+    const typed = (postcodeSearch.value || '').trim();
+    if(!typed) return;
+    let chosen = dataRows.find(r => r.postcode.toLowerCase() === typed.toLowerCase());
+    if(!chosen){ filterPostcodes(typed); chosen = currentHits[0]; }
+    if(chosen){
+      e.preventDefault();
+      committedPostcode = chosen.postcode;
+      postcodeSearch.value = committedPostcode;
+      renderTopMatch(topMatchPrimary, chosen);
+      renderTopMatch(topMatchSecondary, chosen);
+      const statPostcode = document.getElementById('statPostcode');
+      const dupPostcode = document.getElementById('dupPostcode');
+           if (statPostcode) statPostcode.textContent = committedPostcode;
+      if (dupPostcode)  dupPostcode.textContent  = committedPostcode;
+    }
+  });
+}
 
-  const typedLower = typed.toLowerCase();
-  // exact first
-  let chosen = dataRows.find(r => r.postcode.toLowerCase() === typedLower);
-  if(!chosen){ filterPostcodes(typed); chosen = currentHits[0]; }
-  if(chosen){
-    e.preventDefault();
-       committedPostcode = chosen.postcode;
-    postcodeSearch.value = committedPostcode;
-    renderTopMatch(topMatchPrimary, chosen);
-    renderTopMatch(topMatchSecondary, chosen);
-    updateStats();
-  }
-});
+// Default on first load (optional)
 
-// ================= INIT =================
-loadCountry('UK'); // default view on load
 
 </script>
 </body>
