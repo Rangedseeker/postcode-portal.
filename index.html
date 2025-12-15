@@ -39,43 +39,56 @@
 <body>
   <div class="wrap">
 
-    <!-- FROM SECTION -->
-    <div class="card grid" id="fromSection">
-      <h2>From (Collection)</h2>
-      <div class="topbar">
-        <div>
-          <label for="fromCountry">Country (UK / BEL / NL / LUX)</label>
-          <input id="fromCountry" list="countryList" placeholder="Type UK, BEL, NL, LUX or name and press Enter" autocomplete="off" />
-        </div>
-        <div>
-          <label for="fromPostcode">Postcode</label>
-          <input id="fromPostcode" placeholder="Type postcode and press Enter" autocomplete="off" disabled />
-        </div>
-      </div>
-      <div class="topmatch card">
-        <div class="pill"><span>Top match</span><span id="fromHits" class="muted"></span></div>
-        <div id="fromSummary"><div class="muted small">No match yet — start typing a postcode</div></div>
-      </div>
-    </div>
 
-    <!-- TO SECTION -->
-    <div class="card grid" id="toSection">
-      <h2>To (Destination)</h2>
-      <div class="topbar">
-        <div>
-          <label for="toCountry">Country (UK / BEL / NL / LUX)</label>
-          <input id="toCountry" list="countryList" placeholder="Type UK, BEL, NL, LUX or name and press Enter" autocomplete="off" />
-        </div>
-        <div>
-          <label for="toPostcode">Postcode</label>
-          <input id="toPostcode" placeholder="Type postcode and press Enter" autocomplete="off" disabled />
-        </div>
-      </div>
-      <div class="topmatch card">
-        <div class="pill"><span>Top match</span><span id="toHits" class="muted"></span></div>
-        <div id="toSummary"><div class="muted small">No match yet — start typing a postcode</div></div>
-      </div>
+<!-- FROM SECTION -->
+<div class="card grid" id="fromSection">
+  <h2>From (Collection)</h2>
+  <div class="topbar">
+    <div>
+      <label for="fromCountry">Country</label>
+      <select id="fromCountry">
+        <option value="" selected>— Select —</option>
+        <option value="UK">UK – United Kingdom</option>
+        <option value="BEL">BEL – Belgium</option>
+        <option value="NL">NL – Holland</option>
+        <option value="LUX">LUX – Luxembourg</option>
+      </select>
     </div>
+    <div>
+      <label for="fromPostcode">Postcode</label>
+      <input id="fromPostcode" placeholder="Type postcode and press Enter" autocomplete="off" disabled />
+    </div>
+  </div>
+  <div class="topmatch card">
+    <div class="pill"><span>Top match</span><span id="fromHits" class="muted"></span></div>
+    <div id="fromSummary"><div class="muted small">No match yet — start typing a postcode</div></div>
+  </div>
+</div>
+
+<!-- TO SECTION -->
+<div class="card grid" id="toSection">
+  <h2>To (Destination)</h2>
+  <div class="topbar">
+    <div>
+      <label for="toCountry">Country</label>
+      <select id="toCountry">
+        <option value="" selected>— Select —</option>
+        <option value="UK">UK – United Kingdom</option>
+        <option value="BEL">BEL – Belgium</option>
+        <option value="NL">NL – Holland</option>
+        <option        <option value="LUX">LUX – Luxembourg</option>
+      </select>
+    </div>
+    <div>
+      <label for="toPostcode">Postcode</label>
+      <input id="toPostcode" placeholder="Type postcode and press Enter" autocomplete="off" disabled />
+    </div>
+  </div>
+  <div class="topmatch card">
+    <div class="pill"><span>Top match</span><span id="toHits" class="muted"></span></div>
+    <div id="toSummary"><div class="muted small">No match yet — start typing a postcode</div></div>
+  </div>
+
 
         <!-- STICKY SUMMARY OF BOTH SECTIONS  -->
     <div class="sticky-dup">
@@ -96,66 +109,53 @@
     </div>
     
     <!-- NUMBER BOXES (simple adder) -->
-    <div class="card grid" id="numbersCard">
-      <h2>Numbers</h2>
-      <div class="numbers-grid">
-        <div>
-          <label for="num1">Number 1</label>
-          <input id="num1" type="number" inputmode="decimal" placeholder="0" />
-        </div>
-        <div>
-          <label for="num2">Number 2</label>
-          <input id="num2" type="number" inputmode="decimal" placeholder="0" />
-        </div>
-        <div>
-          <label for="num3">Number 3</label>
-          <input id="num3" type="number" inputmode="decimal" placeholder="0" />
-        </div>
-        <div>
-          <label for="num4">Number 4</label>
-          <input id="num4" type="number" inputmode="decimal" placeholder="0" />
-        </div>
-        <div>
-          <label for="num5">Number 5</label>
-          <input id="num5" type="number" inputmode="decimal" placeholder="0" />
-        </div>
-        <div class="card">
-          <strong class="muted small">Sum</strong><br/>
-          <span class="pill" id="sumTotal">0</span>
-        </div>
-      </div>
+    
+<div class="card grid" id="numbersCard">
+  <h2>Numbers</h2>
+  <div class="numbers-grid">
+    <div>
+      <label for="num1">Number 1</label>
+      <input id="num1" type="number" inputmode="decimal" placeholder="0" data-sum />
     </div>
+    <div>
+      <label for="num2">Number 2</label>
+      <input id="num2" type="number" inputmode="decimal" placeholder="0" data-sum />
+    </div>
+    <div>
+      <label for="num3">Number 3</label>
+      <input id="num3" type="number" inputmode="decimal" placeholder="0" data-sum />
+    </div>
+    <div>
+      <label for="num4">Number 4</label>
+      <input id="num4" type="number" inputmode="decimal" placeholder="0" data-sum />
+    </div>
+    <div>
+      <label for="num5">Number 5</label>
+      <input id="num5" type="number" inputmode="decimal" placeholder="0" data-sum />
+    </div>
+       <div class="card">
+      <strong class="muted small">Sum</strong><br/>
+      <span class="pill" id="sumTotal">0</span>
+    </div>
+  </div>
+
 
     <!-- Shared datalist for the two country inputs -->
     <datalist id="countryList"></datalist>
 
   </div>
 
+
 <script>
-/* ========= DATA & ALIASES ========= */
+/* ========= DATA FILE MAP ========= */
 const DATA_FILES = {
   UK:  { label: 'United Kingdom', file: 'postcodes_uk.json'  },
   BEL: { label: 'Belgium',        file: 'postcodes_bel.json' },
   NL:  { label: 'Holland',        file: 'postcodes_nl.json'  },
   LUX: { label: 'Luxembourg',     file: 'postcodes_lux.json' }
 };
-const COUNTRY_ALIASES = new Map([
-  ['UK','UK'], ['UNITED KINGDOM','UK'],
-  ['BEL','BEL'], ['BELGIUM','BEL'],
-  ['NL','NL'], ['NETHERLANDS','NL'], ['HOLLAND','NL'],
-  ['LUX','LUX'], ['LUXEMBOURG','LUX']
-]);
-const countriesArr = Object.entries(DATA_FILES).map(([code,v])=>({code, name:v.label, data:v.file}));
-const countryList = document.getElementById('countryList');
-countryList.innerHTML = '';
-countriesArr.forEach(c=>{
-  const opt = document.createElement('option');
-  opt.value = c.code;
-  opt.label = `${c.code} – ${c.name}`;
-  countryList.appendChild(opt);
-});
 
-/* ========= UTIL ========= */
+/* ========= UTILITIES ========= */
 const normRow = (r) => {
   const postcode = (r.postcode ?? r.Postcode ?? r.code ?? r.pc ?? '').toString().trim();
   const region   = (r.region   ?? r.Region   ?? r['Town/Area'] ?? r.Town ?? r.Area ?? '').toString().trim();
@@ -168,27 +168,27 @@ const score = (row, q) => {
   if (p.includes(q)) return 2;
   return 9;
 };
-function renderSummary(el, row){
-  el.innerHTML = row ? `
+function summaryHTML(row){
+  return row ? `
     <table>
       <tr><td class="muted small">Postcode</td><td><strong>${row.postcode}</strong></td></tr>
       <tr><td class="muted small">Town / Area</td><td>${row.region || '—'}</td></tr>
     </table>` : `<div class="muted small">No match</div>`;
 }
 
-/* ========= SECTION FACTORY ========= */
-function makeSection(cfg){
-  const { ids, defaultCountry } = cfg;
-  // DOM
-  const countryInput = document.getElementById(ids.country);
-  const postcodeInput= document.getElementById(ids.postcode);
-  const hitsLabel    = document.getElementById(ids.hits);
-  const summaryBox   = document.getElementById(ids.summary);
-  const dupCountry   = document.getElementById(ids.dupCountry);
-  const dupPostcode  = document.getElementById(ids.dupPostcode);
-  const dupSummary   = document.getElementById(ids.dupSummary);
+/* ========= SECTION WIRING ========= */
+function wireSection({ ids, defaultCountry }){
+  const elCountry   = document.getElementById(ids.country);
+  const elPostcode  = document.getElementById(ids.postcode);
+  const elHits      = document.getElementById(ids.hits);
+  const elSummary   = document.getElementById(ids.summary);
 
-  // State
+  // Sticky duplicates (optional)
+  const dupCountry  = document.getElementById(ids.dupCountry);
+  const dupPostcode = document.getElementById(ids.dupPostcode);
+  const dupSummary  = document.getElementById(ids.dupSummary);
+
+  // Per-section state
   let selectedCountry = null;
   let dataRows = [];
   let hits = [];
@@ -202,24 +202,32 @@ function makeSection(cfg){
 
   async function loadCountry(code){
     const item = DATA_FILES[(code||'').toUpperCase()];
-    if(!item) return;
+    if(!item){ return; }
+
     selectedCountry = code.toUpperCase();
-    countryInput.value = selectedCountry;
-    dataRows = []; hits = []; committedPostcode = null;
-    postcodeInput.value = ''; postcodeInput.disabled = true;
-    renderSummary(summaryBox, null); hitsLabel.textContent = '';
+    committedPostcode = null;
+    dataRows = [];
+    hits = [];
+
+    // Reset postcode UI
+    elPostcode.value = '';
+    elPostcode.disabled = true;
+    elHits.textContent = '';
+    elSummary.innerHTML = summaryHTML(null);
     updateDup();
 
     try{
-      const res = await fetch(item.file, { cache:'no-store' });
+      // IMPORTANT: JSON files must be next to index.html (or update path here)
+      const res = await fetch(item.file, { cache: 'no-store' });
       if(!res.ok) throw new Error(`${item.file} ${res.status}`);
       const raw = await res.json();
       const arr = Array.isArray(raw) ? raw : (raw.data || raw.rows || []);
-      dataRows = arr.map(normRow).filter(r=>r.postcode);
-      postcodeInput.disabled = false;
-    }catch(e){
-      console.error('Load failed for', selectedCountry, e);
+      dataRows = arr.map(normRow).filter(r => r.postcode);
+      elPostcode.disabled = false;
+    }catch(err){
+      console.error('Failed to load dataset for', selectedCountry, err);
     }
+
     updateDup();
   }
 
@@ -232,78 +240,87 @@ function makeSection(cfg){
       .slice(0, 100);
   }
 
-  function commitCountry(raw){
-    if(!raw) return;
-    const key = raw.trim().toUpperCase();
-    const code = COUNTRY_ALIASES.get(key) || Object.keys(DATA_FILES).find(k=>k.startsWith(key));
-    if(code) loadCountry(code);
-  }
-
   // Events
-  countryInput.addEventListener('keydown', (e)=>{
-    if(e.key === 'Enter'){ e.preventDefault(); commitCountry(countryInput.value); }
+  elCountry.addEventListener('change', ()=>{
+    const code = elCountry.value; // exact code from <select>
+    if (!code) { // reset if user chose "— Select —"
+      selectedCountry = null; dataRows = []; hits = []; committedPostcode = null;
+      elPostcode.value = ''; elPostcode.disabled = true;
+      elSummary.innerHTML = summaryHTML(null); elHits.textContent = '';
+      updateDup();
+      return;
+    }
+    loadCountry(code);
   });
-  countryInput.addEventListener('blur', ()=> commitCountry(countryInput.value));
 
-  postcodeInput.addEventListener('input', ()=>{
-    const q = (postcodeInput.value || '').trim();
+  elPostcode.addEventListener('input', ()=>{
+    const q = (elPostcode.value || '').trim();
     filter(q);
-    hitsLabel.textContent = hits.length ? `(${hits.length} hits)` : '';
-    renderSummary(summaryBox, hits[0] || null);
+    elHits.textContent = hits.length ? `(${hits.length} hits)` : '';
+    elSummary.innerHTML = summaryHTML(hits[0] || null);
     updateDup();
   });
-  postcodeInput.addEventListener('keydown', (e)=>{
+
+  elPostcode.addEventListener('keydown', (e)=>{
     if(e.key !== 'Enter') return;
-    const typed = (postcodeInput.value || '').trim();
+    const typed = (elPostcode.value || '').trim();
     if(!typed) return;
     let chosen = dataRows.find(r => r.postcode.toLowerCase() === typed.toLowerCase());
     if(!chosen){ filter(typed); chosen = hits[0]; }
     if(chosen){
       e.preventDefault();
       committedPostcode = chosen.postcode;
-      postcodeInput.value = committedPostcode;
-      renderSummary(summaryBox, chosen);
+      elPostcode.value = committedPostcode;
+      elSummary.innerHTML = summaryHTML(chosen);
       updateDup();
     }
   });
 
-  // init
-  if (defaultCountry) loadCountry(defaultCountry);
-  return { loadCountry, get state(){ return {selectedCountry, committedPostcode}; } };
+  // Default selection, if provided
+  if (defaultCountry) {
+    elCountry.value = defaultCountry;
+    loadCountry(defaultCountry);
+  }
+
+  // expose a tiny API if needed later
+  return {
+    get state(){ return { selectedCountry, committedPostcode, hitsCount: hits.length }; }
+  };
 }
 
-/* ========= BUILD BOTH SECTIONS ========= */
-const from = makeSection({
+/* ========= WIRE BOTH SECTIONS ========= */
+const from = wireSection({
   ids:{
     country:'fromCountry', postcode:'fromPostcode', hits:'fromHits', summary:'fromSummary',
     dupCountry:'dupFromCountry', dupPostcode:'dupFromPostcode', dupSummary:'dupFromSummary'
   },
-  defaultCountry:'NL' // example: default From = NL
+  defaultCountry:'NL' // pick your default
 });
-const to = makeSection({
+const to = wireSection({
   ids:{
     country:'toCountry', postcode:'toPostcode', hits:'toHits', summary:'toSummary',
     dupCountry:'dupToCountry', dupPostcode:'dupToPostcode', dupSummary:'dupToSummary'
   },
-  defaultCountry:'UK' // example: default To = UK
+  defaultCountry:'UK' // pick your default
 });
 
-/* ========= NUMBERS (simple sum) ========= */
-function toNum(v){ const x = parseFloat(v); return isNaN(x) ? 0 : x; }
+/* ========= NUMBERS SUM ========= */
+function toNum(v){ const x = parseFloat(v); return Number.isFinite(x) ? x : 0; }
 function updateSum(){
-  const sum =
-    toNum(document.getElementById('num1').value) +
-    toNum(document.getElementById('num2').value) +
-    toNum(document.getElementById('num3').value) +
-    toNum(document.getElementById('num4').value) +
-    toNum(document.getElementById('num5').value);
-  document.getElementById('sumTotal').textContent = sum.toLocaleString();
+  const inputs = document.querySelectorAll('input[data-sum]');
+  const sum = Array.from(inputs).reduce((acc, el)=> acc + toNum(el.value), 0);
+  const out = document.getElementById('sumTotal');
+  if (out) out.textContent = sum.toLocaleString();
 }
-['num1','num2','num3','num4','num5'].forEach(id=>{
-  const el = document.getElementById(id);
-  if(el){ el.addEventListener('input', updateSum); el  if(el){ el.addEventListener('input', updateSum); el.addEventListener('change', updateSum); }
+// Listen on any change to any data-sum input
+document.addEventListener('input', (e)=>{
+  if (e.target && e.target.matches('input[data-sum]')) updateSum();
 });
-updateSum();
+document.addEventListener('change', (e)=>{
+  if (e.target && e.target.matches('input[data-sum]')) updateSum();
+});
+updateSum();updateSum(); // initial
+
 
 </script>
 </body>
