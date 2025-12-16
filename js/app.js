@@ -1,3 +1,4 @@
+
 /* ========= DATA FILE MAP ========= */
 const DATA_FILES = {
   UK:  { file: 'postcodes_uk.json'  },
@@ -13,35 +14,11 @@ const normRow = (r) => {
   return { postcode, region };
 };
 
-// UK outward part (first chunk before the space)
-function outwardFromDatasetPostcode(pc) {
+function outwardUK(pc){
   const s = (pc ?? '').toString().trim().toUpperCase();
-  const parts = s.split(/\s+/);
-  return parts[0] || s;
+  const [outward] = s.split(/\s+/);
+  return outward || s;
 }
-
-// Normalize user input per country (UK: outward-only)
-function normalizePostcodeByCountry(input, countryCode) {
-  let s = (input ?? '').toString().trim();
-  if (!s) return '';
-  const cc = (countryCode ?? '').toUpperCase();
-
-  s = s.replace(/\s+/g, '');
-
-  if (cc === 'UK') {
-    // Allow outward-only typing; just uppercase
-    return s.toUpperCase();
-  }
-  return s.toUpperCase();
-}
-
-const score = (row, q) => {
-  const p = row.postcode.toLowerCase();
-  if (p === q) return 0;
-  if (p.startsWith(q)) return 1;
-  if (p.includes(q)) return 2;
-  return 9;
-};
 
 function summaryHTML(row){
   if(!row) return '';
@@ -52,137 +29,225 @@ function summaryHTML(row){
     </table>`;
 }
 
-/* ========= SECTION WIRING ========= */
+function resolveCountryCode(raw) {
+  const v = (raw ?? '').toString().trim().toUpperCase();
+  if (!v) return null;
+  if (DATA_FILES[v]) return v;
+  const map = {
+    'UK':'UK','GB':'UK','GBR':'UK','UNITED KINGDOM':'UK','GREAT BRITAIN':'UK',
+    'ENGLAND':'UK','SCOTLAND':'UK','WALES':'UK','NORTHERN IRELAND':'UK',
+    'BEL':'BEL','BELGIUM':'BEL','BE':'BEL',
+    'NL':'NL','NLD':'NL','NETHERLANDS':'NL','HOLLAND':'NL',
+    'LUX':'LUX','LUXEMBOURG':'LUX','LU':'LUX',
+  };
+  return map[v] ?? null;
+}
+
+function normalizePostcode(input, country){
+  let s = (input ?? '').toString().trim().replace(/\s+/g, '');
+  if (!s) return '';
+  return s.toUpperCase(); // outward-only for UK; others uppercase
+}
+
+/* ========= TYPEAHEAD WIDGET ========= */
+function makeTypeahead(inputEl, {
+  source,            // async (query) => [{label, value, payload}]
+  onSelect,          // (item) => void
+  minChars = 1,
+  linkToCountry = null // optional function to get current country code
+}){
+  const wrap = document.createElement('div');
+  wrap.className = 'ta-wrap';
+  inputEl.parentElement.appendChild(wrap);
+  wrap.appendChild(inputEl);
+
+  const list = document.createElement('ul');
+  list.className = 'ta-list';
+  inputEl.parentElement.appendChild(list);
+
+  let items = [];
+  let activeIndex = -1;
+
+  function render(){
+    list.innerHTML = '';
+    items.forEach((it, idx)=>{
+      const li = document.createElement('li');
+      li.className = 'ta-item' + (idx === activeIndex ? ' active' : '');
+      li.textContent = it.label;
+      li.addEventListener('mousedown', (e)=>{ e.preventDefault(); select(idx); });
+      list.appendChild(li);
+    });
+    list.style.display = items.length ? 'block' : 'none';
+  }
+
+  async function update(){
+    const q = inputEl.value || '';
+    const cc = linkToCountry ? linkToCountry() : null;
+    if (q.trim().length < minChars) { items = []; render(); return; }
+    try{
+      items = await source(q, cc);
+    }catch(e){
+      console.error('typeahead source error', e);
+      items = [];
+    }
+    activeIndex = items.length ? 0 : -1;
+    render();
+  }
+
+  function select(idx){
+    if (idx < 0 || idx >= items.length) return;
+    const it = items[idx];
+    inputEl.value = it.value;
+    items = []; render();
+    onSelect?.(it);
+  }
+
+  inputEl.addEventListener('input', update);
+  inputEl.addEventListener('keydown', (e)=>{
+    if (e.key === 'ArrowDown') { e.preventDefault(); activeIndex = Math.min(activeIndex+1, items.length-1); render(); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); activeIndex = Math.max(activeIndex-1, 0); render(); }
+    else if (e.key === 'Enter') { if (activeIndex >= 0) { e.preventDefault(); select(activeIndex); } }
+    else if (e.key === 'Escape') { items = []; render(); }
+  });
+
+  // Hide list when clicking elsewhere
+  document.addEventListener('click', (e)=>{
+    if (!list.contains(e.target) && e.target !== inputEl) {
+      items = []; render();
+    }
+  });
+
+  return { update, clear: ()=>{ items=[]; render(); } };
+}
+
+/* ========= DATA LAYER FOR POSTCODES ========= */
+async function loadDatasetFor(code){
+  const cc = resolveCountryCode(code);
+  if(!cc) return { cc:null, rows:[] };
+  const meta = DATA_FILES[cc];
+  const res = await fetch(meta.file, { cache:'no-store' });
+  if(!res.ok) throw new Error(`${meta.file} ${res.status}`);
+  const raw = await res.json();
+  const arr = Array.isArray(raw) ? raw : (raw.data || raw.rows || []);
+  let rows = arr.map(normRow).filter(r => r.postcode);
+  if (cc === 'UK') rows = rows.map(r => ({ ...r, outward: outwardUK(r.postcode) }));
+  return { cc, rows };
+}
+
+/* ========= SECTION WIRING WITH TYPEAHEAD ========= */
 function wireSection({ countryId, postcodeId, townId }){
   const elCountry  = document.getElementById(countryId);
   const elPostcode = document.getElementById(postcodeId);
   const elTown     = document.getElementById(townId);
 
-  if (!elCountry) {
-    console.warn(`wireSection: missing #${countryId}`);
+  if (!elCountry || !elPostcode || !elTown) {
+    console.warn('Missing elements for', {countryId, postcodeId, townId});
     return;
   }
 
-  let selectedCountry = null;  // 'UK' | 'BEL' | 'NL' | 'LUX'
-  let dataRows = [];
-  let hits = [];
-  let committedPostcode = null;
+  let state = {
+    cc: null,
+    rows: [],
+  };
 
-  function resetSectionUI(){
-    committedPostcode = null;
-    dataRows = [];
-    hits = [];
-    if (elPostcode){
+  // Country typeahead (static suggestions)
+  const countrySuggestions = [
+    { label:'United Kingdom', value:'United Kingdom' },
+    { label:'UK', value:'UK' },
+    { label:'GB', value:'GB' },
+    { label:'Belgium', value:'Belgium' },
+    { label:'BEL', value:'BEL' },
+    { label:'BE', value:'BE' },
+    { label:'Netherlands', value:'Netherlands' },
+    { label:'NL', value:'NL' },
+    { label:'Luxembourg', value:'Luxembourg' },
+    { label:'LUX', value:'LUX' },
+    { label:'LU', value:'LU' },
+  ];
+
+  const countryTA = makeTypeahead(elCountry, {
+    source: async (q) => {
+      const qq = q.trim().toLowerCase();
+      return countrySuggestions
+        .filter(x => x.label.toLowerCase().includes(qq) || x.value.toLowerCase().includes(qq))
+        .map(x => ({ ...x, payload:null }))
+        .slice(0, 8);
+    },
+    onSelect: async (item) => {
+      elTown.innerHTML = '';
       elPostcode.value = '';
       elPostcode.disabled = true;
-    }
-    if (elTown) elTown.innerHTML = ''; // show nothing
-  }
-
-  async function loadCountry(code){
-    if(!code){
-      selectedCountry = null;
-      resetSectionUI();
-      return;
-    }
-    selectedCountry = code.toUpperCase();
-    resetSectionUI();
-
-    try{
-      const meta = DATA_FILES[selectedCountry];
-      if(!meta) {
-        console.warn(`[${countryId}] No dataset for`, selectedCountry);
-        return;
+      try{
+        const { cc, rows } = await loadDatasetFor(item.value);
+        state.cc = cc;
+        state.rows = rows;
+        elPostcode.disabled = !cc;
+      }catch(err){
+        console.error('Country dataset load failed', err);
+        state.cc = null; state.rows = [];
+        elPostcode.disabled = false; // allow typing even if dataset fails
       }
-      const res = await fetch(meta.file, { cache:'no-store' });
-      if(!res.ok) throw new Error(`${meta.file} ${res.status}`);
-      const raw = await res.json();
-      const arr = Array.isArray(raw) ? raw : (raw.data || raw.rows || []);
-      dataRows = arr.map(normRow).filter(r => r.postcode);
+    },
+    minChars: 1,
+  });
 
-      // For UK datasets, cache outward code
-      if (selectedCountry === 'UK') {
-        dataRows = dataRows.map(r => ({ ...r, outward: outwardFromDatasetPostcode(r.postcode) }));
+  // Postcode typeahead (depends on selected country)
+  const postcodeTA = makeTypeahead(elPostcode, {
+    linkToCountry: () => state.cc,
+    source: async (q, cc) => {
+      const normalized = normalizePostcode(q, cc);
+      const qq = normalized.toLowerCase();
+      if (!cc || !qq) return [];
+
+      if (cc === 'UK') {
+        // Outward-only: prefix match outward
+        return state.rows
+          .filter(r => r.outward && r.outward.toLowerCase().startsWith(qq))
+          .slice(0, 10)
+          .map(r => ({
+            label: `${r.outward} — ${r.region || '—'}`,
+            value: r.outward,
+            payload: r
+          }));
       }
-
-      if (elPostcode) elPostcode.disabled = false;
-      console.log(`[${countryId}] Loaded ${dataRows.length} rows for ${selectedCountry}`);
-    }catch(err){
-      console.error(`[${countryId}] Failed to load dataset for ${selectedCountry}:`, err);
-      // Let user type even if suggestions fail
-      if (elPostcode) elPostcode.disabled = false;
-    }
-  }
-
-  function filter(q){
-    hits = [];
-    if(!q) return;
-
-    const normalized = normalizePostcodeByCountry(q, selectedCountry);
-    const qq = normalized.trim().toLowerCase();
-
-    if (selectedCountry === 'UK') {
-      // Outward-only: startsWith outward
-      hits = dataRows
-        .filter(r => r.outward && r.outward.toLowerCase().startsWith(qq))
-        .sort((a,b)=> a.outward.localeCompare(b.outward))
-        .slice(0, 1);
-    } else {
-      // Original behavior for other countries
-      hits = dataRows
+      // Other countries: includes on full postcode
+      return state.rows
         .filter(r => r.postcode && r.postcode.toLowerCase().includes(qq))
-        .sort((a,b)=> score(a,qq) - score(b,qq) || a.postcode.localeCompare(b.postcode))
-        .slice(0, 1);
-    }
-  }
+        .slice(0, 10)
+        .map(r => ({
+          label: `${r.postcode} — ${r.region || '—'}`,
+          value: r.postcode,
+          payload: r
+        }));
+    },
+    onSelect: (item) => {
+      const r = item.payload;
+      elTown.innerHTML = summaryHTML(r);
+    },
+    minChars: 1,
+  });
 
-  // Country select
-  elCountry.addEventListener('change', () => loadCountry(elCountry.value));
-
-  if (elPostcode) {
-    elPostcode.addEventListener('input', () => {
-      const qRaw = (elPostcode.value || '').trim();
-      const formatted = normalizePostcodeByCountry(qRaw, selectedCountry);
-      if (formatted !== elPostcode.value) elPostcode.value = formatted;
-      filter(formatted);
-      if (elTown) elTown.innerHTML = summaryHTML(hits[0] || null);
-    });
-
-    elPostcode.addEventListener('keydown', (e) => {
-      if(e.key !== 'Enter') return;
-      const typed = normalizePostcodeByCountry((elPostcode.value || '').trim(), selectedCountry);
-      if(!typed) return;
-
-      let chosen = null;
-      if (selectedCountry === 'UK') {
-        chosen = dataRows.find(r => r.outward && r.outward.toLowerCase() === typed.toLowerCase());
-      } else {
-        chosen = dataRows.find(r => r.postcode.toLowerCase() === typed.toLowerCase());
-      }
-      if(!chosen){ filter(typed); chosen = hits[0]; }
-
-      if(chosen){
-        e.preventDefault();
-        committedPostcode = selectedCountry === 'UK' ? (chosen.outward || chosen.postcode) : chosen.postcode;
-        elPostcode.value = committedPostcode;
-        if (elTown) elTown.innerHTML = summaryHTML(chosen);
+  // If a country value is prefilled (e.g., from server), load immediately
+  if (elCountry.value) {
+    countryTA.source(elCountry.value).then(async (list)=>{
+      // Resolve and load even if it wasn't selected via list
+      try{
+        const { cc, rows } = await loadDatasetFor(elCountry.value);
+        state.cc = cc; state.rows = rows;
+        elPostcode.disabled = !cc;
+      }catch(err){
+        console.error('Initial country dataset load failed', err);
+        elPostcode.disabled = false;
       }
     });
-  } else {
-    console.warn(`wireSection: missing #${postcodeId}`);
   }
-
-  // Initial state + initial dataset load if a value is already present (e.g., preselected)
-  resetSectionUI();
-  if (elCountry.value) loadCountry(elCountry.value);
 }
 
-/* ========= NUMBERS SUM ========= */
+/* ========= NUMBERS SUM (unchanged behavior, comma-safe) ========= */
 function toNum(v){
   if (v == null) return 0;
   let s = String(v).trim();
   if (!s) return 0;
-  // Remove spaces and thousands separators
   s = s.replace(/\s+/g, '').replace(/,/g, '');
   const x = Number(s);
   return Number.isFinite(x) ? x : 0;
@@ -200,7 +265,6 @@ document.addEventListener('DOMContentLoaded', () => {
   wireSection({ countryId:'Col_Country', postcodeId:'Col_Postcode', townId:'Col_Town' });
   wireSection({ countryId:'Del_Country', postcodeId:'Del_Postcode', townId:'Del_Town' });
 
-  // Sum: initial calc + live updates
   updateSum();
   document.addEventListener('input', (e)=>{
     if (e.target && e.target.matches('input[data-sum]')) updateSum();
