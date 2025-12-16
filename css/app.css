@@ -1,158 +1,236 @@
 
+/* ===========================================================
+   THEME VARIABLES
+   =========================================================== */
 :root{
-  --brand:#0b5bb5;
-  --brand-dark:#084a92;
-  --bg:#f5f7fb;
-  --panel:#ffffff;
-  --panel-border:#e4e8f0;
-  --text:#192233;
-  --muted:#64748b;
-  --focus:#2563eb;
+  --brand: #0b5bb5;          /* Blue banner */
+  --brand-dark: #084a92;     /* Darker blue (optional) */
+  --bg: #f5f7fb;             /* Page background */
+  --panel: #ffffff;          /* Card/panel background */
+  --panel-border: #e4e8f0;   /* Subtle borders */
+  --line: #d6dbe6;           /* Separator line */
+  --text: #192233;           /* Main text color */
+  --muted: #64748b;          /* Muted text */
+  --focus: #2563eb;          /* Focus ring */
 }
 
-/* Global */
-*{ box-sizing:border-box; }
+/* ===========================================================
+   GLOBAL BASE
+   =========================================================== */
+*{ box-sizing: border-box; }
+html, body{ height: 100%; }
 body{
-  margin:0;
-  background:var(--bg);
-  color:var(--text);
-  font:16px/1.5 "Inter", system-ui;
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.5 "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
-a{text-decoration:none;color:inherit;}
+a{ color: inherit; text-decoration: none; }
 
-/* Header */
+/* ===========================================================
+   HEADER (two-tier: brand line + blue banner)
+   =========================================================== */
 .header{
-  position:sticky;
-  top:0;
-  z-index:100;
-  display:grid;
-  grid-template-rows:auto auto;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: grid;
+  grid-template-rows: auto auto; /* brand above, banner below */
 }
+
+/* Brand line (top row) */
 .brand{
-  display:flex;
-  align-items:center;
-  gap:.5em;
-  background:var(--bg);
-  padding:10px 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: .5em;
+  padding: 10px 18px;
+  background: var(--bg);
+  color: var(--text);
 }
 .brand__icon{
-  width:1.15em;
-  height:1.15em;
-  border:1px solid var(--panel-border);
-  border-radius:4px;
+  width: 1.15em;
+  height: 1.15em;
+  object-fit: contain;
+  border-radius: .25em;
+  border: 1px solid var(--panel-border);
+  transform: translateY(1px); /* tiny baseline nudge */
 }
+.brand__text{
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+/* Blue banner (subnav) */
 .subnav{
-  background:var(--brand);
-  padding:8px 18px;
-  color:#fff;
+  background: var(--brand);
+  color: #fff;
+  padding: 8px 18px;
+  border-bottom: 1px solid var(--panel-border);
 }
 .nav{
-  display:flex;
-  gap:12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: flex-start;
 }
 .nav a{
-  padding:6px 10px;
-  border-radius:6px;
-  transition:0.2s;
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 6px;
+  color: #ffffff;
+  border: 1px solid transparent;
+  transition: background .15s, border-color .15s, color .15s;
 }
-.nav a:hover, .nav a.active{
-  background:rgba(255,255,255,0.2);
+.nav a:hover,
+.nav a.active{
+  background: rgba(255,255,255,0.15);
+  border-color: rgba(255,255,255,0.25);
 }
 
-/* Layout */
+/* ===========================================================
+   LAYOUT (Sidebar + Content)
+   =========================================================== */
 .layout{
-  display:grid;
-  grid-template-columns:240px auto;
-  max-width:1200px;
-  margin:20px auto;
-  gap:16px;
-  padding:0 16px;
-}
-.sidebar{
-  background:#fff;
-  border:1px solid var(--panel-border);
-  border-radius:12px;
-  padding:12px;
-}
-.menu{display:grid;gap:6px;}
-.menu a, .menu .item{
-  background:#fafbff;
-  padding:10px;
-  border:1px solid var(--panel-border);
-  border-radius:10px;
-}
-.menu a.active{
-  background:#e7f0ff;
-  border-color:#c7dcff;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 16px;
+  max-width: 1200px;
+  margin: 20px auto 40px;
+  padding: 0 16px;
 }
 
-/* Cards */
-.content{display:grid;gap:16px;}
+/* Sidebar */
+.sidebar{
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  padding: 12px;
+}
+.sidebar h3{
+  margin: 6px 0 12px;
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.menu{ display: grid; gap: 6px; }
+.menu a,
+.menu .item{
+  display: block;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--panel-border);
+  background: #fafbff;       /* tile background */
+  font-size: 14px;
+  color: var(--text);
+}
+.menu a.active,
+.menu .item.active{
+  background: #edf3ff;       /* active tile */
+  border-color: #c8dcff;
+}
+.menu br{ content:""; display:block; margin: 3px 0; } /* spacing helper */
+
+/* Content & cards */
+.content{ display: grid; gap: 16px; }
 .card{
-  background:#fff;
-  border:1px solid var(--panel-border);
-  border-radius:12px;
-  padding:14px;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: 0 6px 18px rgba(9, 16, 28, 0.06); /* subtle elevation */
 }
-.grid{display:grid;gap:12px;}
-.numbers-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-}
+h2{ font-size: 18px; margin: 0 0 12px; }
+.grid{ display: grid; gap: 12px; }
+.topbar{ display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.summary{ margin-top: 8px; }
+.muted{ color: var(--muted); }
+.small{ font-size: 12px; }
 
 /* Inputs */
 label{
-  display:block;
-  font-size:12px;
-  color:var(--muted);
-  margin-bottom:4px;
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 6px;
 }
-input{
-  width:100%;
-  padding:10px;
-  border-radius:10px;
-  border:1px solid var(--panel-border);
+input, select{
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--panel-border);
+  background: #fff;
+  color: var(--text);
+  outline: none;
 }
-input:focus{
-  border-color:var(--focus);
-  box-shadow:0 0 0 3px rgba(37,99,235,.2);
+input:focus,
+select:focus{
+  border-color: var(--focus);
+  box-shadow: 0 0 0 3px rgba(37,99,235,.15);
 }
 
-/* Summary / footer */
-.summary{margin-top:8px;}
-.muted{color:var(--muted);}
+/* Numbers */
+.numbers-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.pill{
+  display: inline-grid;
+  grid-auto-flow: column;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 10px;
+  border: 1px solid var(--panel-border);
+  border-radius: 999px;
+  background: #fafbff;
+  color: var(--muted);
+}
+
+/* Footer */
 .footer{
-  text-align:center;
-  padding:12px;
-  background:#2f3b4a;
-  color:#cbd5e1;
+  background: #2f3b4a;
+  color: #cbd5e1;
+  text-align: center;
+  padding: 12px 16px;
+  border-top: 1px solid #22303c;
 }
 
-/* Typeahead */
-.ta-wrap{position:relative;}
+/* ===========================================================
+   TYPEAHEAD DROPDOWN
+   =========================================================== */
+.ta-wrap{ position: relative; }
 .ta-list{
-  position:absolute;
-  top:100%;left:0;right:0;
-  background:#fff;
-  border:1px solid var(--panel-border);
-  border-radius:10px;
-  box-shadow:0 4px 20px rgba(0,0,0,.1);
-  list-style:none;
-  padding:6px 0;
-  display:none;
-  z-index:10;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid var(--panel-border);
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(0,0,0,.06);
+  list-style: none;
+  padding: 6px 0;
+  margin: 0;
+  z-index: 10;
+  display: none; /* shown when items exist */
 }
 .ta-item{
-  padding:8px 12px;
-  cursor:pointer;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
 }
-.ta-item:hover, .ta-item.active{
-  background:#e7f0ff;
+.ta-item:hover,
+.ta-item.active{
+  background: #edf3ff;
 }
 
-/* Responsive */
-@media (max-width:@media (max-width:900px){
-  .layout{grid-template-columns:1fr;}
-  .numbers-grid{grid-template-columns:1fr;}
+/* ===========================================================
+   RESPONS   RESPONSIVE
+   =========================================================== */
+@media (max-width: 900px){
+  .layout{ grid-template-columns: 1fr; }
+  .topbar, .numbers-grid{ grid-template-columns: 1fr; }
 
