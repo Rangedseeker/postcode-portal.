@@ -273,3 +273,4 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target && e.target.matches('input[data-sum]')) updateSum();
   });
 });
+
