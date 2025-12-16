@@ -7,8 +7,7 @@
   <title>Postcode Portal</title>
 
   <!-- Load external CSS -->
-  css/styles.css
-</head>
+  <link rel="stylesheet"
 <body>
 
   <header class="header">
@@ -26,64 +25,53 @@
   </header>
 
   <main class="layout">
-
     <aside class="sidebar">
       <h3>Menu</h3>
       <div class="menu">
         #Dashboard</a>
         #Collections</a>
-        #Deliveries</a>
+        <aeliveries</a>
         <br>
         <div class="item">Totals</div>
       </div>
     </aside>
 
     <section class="content">
-
-      <!-- COLLECTION SECTION -->
+      <!-- COLLECTION -->
       <div class="card">
         <h2>Collection</h2>
         <div class="grid">
           <div>
             <label for="Col_Country">Country</label>
-            <input id="Col_Country" type="text"
-              placeholder="UK / Belgium / Netherlands / Luxembourg">
+            <input id="Col_Country" type="text" placeholder="UK / Belgium / Netherlands / Luxembourg">
           </div>
-
           <div>
             <label for="Col_Postcode">Postcode</label>
-            <input id="Col_Postcode" type="text"
-              placeholder="Enter postcode" disabled>
+            <input id="Col_Postcode" type="text" placeholder="Enter postcode" disabled>
           </div>
         </div>
-
         <div id="Col_Town" class="summary small muted"></div>
       </div>
 
-      <!-- DELIVERY SECTION -->
+      <!-- DELIVERY -->
       <div class="card">
         <h2>Delivery</h2>
         <div class="grid">
           <div>
             <label for="Del_Country">Country</label>
-            <input id="Del_Country" type="text"
-              placeholder="UK / Belgium / Netherlands / Luxembourg">
+            <input id="Del_Country" type="text" placeholder="UK / Belgium / Netherlands / Luxembourg">
           </div>
-
           <div>
             <label for="Del_Postcode">Postcode</label>
-            <input id="Del_Postcode" type="text"
-              placeholder="Enter postcode" disabled>
+            <input id="Del_Postcode" type="text" placeholder="Enter postcode" disabled>
           </div>
         </div>
-
         <div id="Del_Town" class="summary small muted"></div>
       </div>
 
-      <!-- NUMBERS SECTION -->
+      <!-- NUMBERS -->
       <div class="card">
         <h2>Numbers</h2>
-
         <div class="numbers-grid">
           <div>
             <label for="Num_1">Value 1</label>
@@ -94,13 +82,11 @@
             <input id="Num_2" type="text" data-sum placeholder="e.g. 567">
           </div>
         </div>
-
         <p class="summary">
           <span class="muted">Total:</span>
           <strong id="sumTotal">0</strong>
         </p>
       </div>
-
     </section>
   </main>
 
@@ -111,4 +97,4 @@
   <!-- Load external JS -->
   js/app.js</script>
 </body>
-</html>
+
