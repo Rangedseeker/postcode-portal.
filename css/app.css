@@ -3,100 +3,100 @@
    THEME VARIABLES
    =========================================================== */
 :root{
-  /* Brand / bars */
-  --brand: #0b5bb5;      /* main blue (banner) */
-  --brand-dark: #084a92; /* darker shade if you need gradients */
-
-  /* Surfaces */
-  --bg: #f5f7fb;         /* page background */
-  --panel: #ffffff;      /* cards/panels */
-  --panel-border: #e4e8f0; /* light grey borders */
-  --line: #d6dbe6;       /* separators */
-
-  /* Text */
+  --brand: #0b5bb5;         /* blue banner */
+  --brand-dark: #084a92;    /* optional darker shade */
+  --bg: #f5f7fb;            /* page background */
+  --panel: #ffffff;
+  --panel-border: #e4e8f0;  /* grey border under blue */
+  --line: #d6dbe6;
   --text: #192233;
   --muted: #64748b;
-
-  /* Focus ring */
   --focus: #2563eb;
 }
 
 /* ===========================================================
    GLOBAL BASE
    =========================================================== */
-* { box-sizing: border-box; }
-html, body { height: 100%; }
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
 body{
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font: 16px/1.5 "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font:16px/1.5 "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
-a { color: inherit; text-decoration: none; }
+a{ color:inherit; text-decoration:none; }
 
 /* ===========================================================
-   HEADER: Brand line ABOVE the blue banner
+   HEADER (two-tier: brand line + blue banner)
    =========================================================== */
-/* The header is a vertical stack: brand line + nav line, both on page bg */
 .header{
-  display: flex;
-  flex-direction: column;          /* brand above nav */
-  align-items: flex-start;          /* left-align brand & nav */
-  gap: 6px;
-  padding: 12px 18px;
-  background: var(--bg);            /* same as page background */
-  color: var(--text);
   position: sticky;
   top: 0;
   z-index: 100;
-  /* No border here; we draw the border on the blue banner below */
+  display: grid;
+  grid-template-rows: auto auto; /* brand above, banner below */
 }
 
-/* Brand text: “Transport Portal” */
-.logo{
+/* --- Top brand line (page background) --- */
+.brand{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  background: var(--bg);   /* same as page background */
+  color: var(--text);
+  border-bottom: 0;        /* no border here */
+}
+
+.brand__icon{
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  object-fit: cover;       /* keep icon tidy */
+  /* optional subtle border to match your aesthetic */
+  border: 1px solid var(--panel-border);
+}
+
+.brand__text{
   font-weight: 700;
   font-size: 20px;
   line-height: 1.2;
-  color: var(--text);
 }
 
-/* Primary navigation line (Dashboard, Collection & Delivery, Reports, Help) */
-.nav{
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  justify-content: flex-start;      /* left align links */
-  align-items: center;
-  width: 100%;
-  padding: 0;
-}
-
-/* Optional styling if you use <a> links (recommended) */
-.nav a{
-  display: inline-block;
-  padding: 6px 10px;
-  border-radius: 6px;
-  color: #344153;
-  border: 1px solid transparent;
-  transition: background .15s, border-color .15s, color .15s;
-}
-.nav a:hover,
-.nav a.active{
-  background: #eef4ff;
-  border-color: var(--line);
-}
-
-/* Blue banner UNDER the header using an element with class .subnav
-   (If you don't have this element yet, add <div class="subnav"></div> below the header) */
+/* --- Blue banner with left-aligned nav --- */
 .subnav{
   background: var(--brand);
   color: #fff;
   padding: 8px 18px;
-  border-bottom: 1px solid var(--panel-border); /* grey bottom border under blue */
+  border-bottom: 1px solid var(--panel-border); /* grey bottom border */
+}
+
+.nav{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: flex-start; /* left align items */
+  align-items: center;
+}
+
+.nav a{
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 6px;
+  color: #ffffff;                       /* white links on blue */
+  border: 1px solid transparent;
+  transition: background .15s, border-color .15s, color .15s;
+}
+
+.nav a:hover,
+.nav a.active{
+  background: rgba(255,255,255,0.15);   /* subtle hover on blue */
+  border-color: rgba(255,255,255,0.25);
 }
 
 /* ===========================================================
-   MAIN LAYOUT (Sidebar + Content)
+   LAYOUT (Sidebar + Content) — unchanged
    =========================================================== */
 .layout{
   display: grid;
@@ -107,9 +107,7 @@ a { color: inherit; text-decoration: none; }
   padding: 0 16px;
 }
 
-/* ===========================================================
-   SIDEBAR
-   =========================================================== */
+/* Sidebar */
 .sidebar{
   background: #fff;
   border: 1px solid var(--panel-border);
@@ -138,98 +136,73 @@ a { color: inherit; text-decoration: none; }
   background: #edf3ff;
   border-color: #c8dcff;
 }
+.menu br{ content:""; display:block; margin: 3px 0; }
 
-/* If your menu currently uses <br> breaks, this preserves spacing */
-.menu br { content: ""; margin: 3px 0; display: block; }
-
-/* ===========================================================
-   CONTENT / CARDS
-   =========================================================== */
+/* Content & cards */
 .content{ display: grid; gap: 16px; }
-
 .card{
   background: var(--panel);
   border: 1px solid var(--panel-border);
   border-radius: 12px;
   padding: 14px;
 }
-
-h2{
-  font-size: 18px;
-  margin: 0 0 12px;
-}
-
+h2{ font-size:18px; margin:0 0 12px; }
 .grid{ display: grid; gap: 12px; }
-
-.topbar{
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
+.topbar{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
 .summary{ margin-top: 8px; }
 .muted{ color: var(--muted); }
 .small{ font-size: 12px; }
 
 label{
-  display: block;
-  font-size: 12px;
-  color: var(--muted);
-  margin-bottom: 6px;
+  display:block;
+  font-size:12px;
+  color:var(--muted);
+  margin-bottom:6px;
 }
 
-input, select{
-  width: 100%;
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: 1px solid var(--panel-border);
-  background: #fff;
-  color: var(--text);
-  outline: none;
+input,select{
+  width:100%;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid var(--panel-border);
+  background:#fff;
+  color:var(--text);
+  outline:none;
 }
 
-input:focus, select:focus{
+input:focus,select:focus{
   border-color: var(--focus);
   box-shadow: 0 0 0 3px rgba(37,99,235,.15);
 }
 
-/* ===========================================================
-   NUMBERS
-   =========================================================== */
-.numbers-grid{
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
+/* Numbers */
+.numbers-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
 .pill{
-  display: inline-grid;
-  grid-auto-flow: column;
-  gap: 8px;
-  align-items: center;
-  padding: 8px 10px;
-  border: 1px solid var(--panel-border);
-  border-radius: 999px;
-  background: #fafbff;
-  color: var(--muted);
+  display:inline-grid;
+  grid-auto-flow:column;
+  gap:8px;
+  align-items:center;
+  padding:8px 10px;
+  border:1px solid var(--panel-border);
+  border-radius:999px;
+  background:#fafbff;
+  color:var(--muted);
 }
 
-/* ===========================================================
-   FOOTER (if used)
-   =========================================================== */
+/* Footer (if used) */
 .footer{
-  background: #2f3b4a;
-  color: #cbd5e1;
-  text-align: center;
-  padding: 12px 16px;
-  border-top: 1px solid #22303c;
+  background:#2f3b4a;
+  color:#cbd5e1;
+  text-align:center;
+  padding:12px 16px;
+  border-top:1px solid #22303c;
 }
 
 /* ===========================================================
    RESPONSIVE
    =========================================================== */
-@media (max-width: 900px){
-  .layout{ grid-template-columns: 1fr; }
-  .topbar,
-  .numbers-grid{ grid-template-columns: 1fr; }
+@media (max-width:900px){
+  .layout{ grid-template-columns:1fr; }
+  .topbar, .numbers-grid{ grid-template-columns:1fr; }
 }
 
