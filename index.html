@@ -10,92 +10,133 @@
   <link href="https://rangedseeker.github.io/postcode-portal./css/styles.css" rel="stylesheet"/>
 <body>
 
+  <!-- HEADER -->
   <header class="header">
-    <div class="brand">
-      <span class="brand__text">Postcode Portal</span>
+    <div class="header__brand">
+      <div class="logo"></div>
+      <div class="brand-text">Freight Calculator.</div>
     </div>
-
-    <div class="subnav">
-      <nav class="nav">
-        #Home</a>
-        #Lookups</a>
-        #Reports</a>
-      </nav>
+    <div class="header__right">
+      <!-- Replace with your real user/org text if desired -->
+      <span class="user-label">Signed in</span>
+      <div class="header-icons">
+        <span class="icon" aria-hidden="true">⚙️</span>
+        <span class="icon" aria-hidden="true">🔔</span>
+        <span class="icon" aria-hidden="true">❓</span>
+      </div>
     </div>
   </header>
 
-  <main class="layout">
-    <aside class="sidebar">
-      <h3>Menu</h3>
-      <div class="menu">
-        #Dashboard</a>
-        #Collections</a>
-        <aeliveries</a>
-        <br>
-        <div class="item">Totals</div>
-      </div>
-    </aside>
+  <!-- TOP NAV (white)
+  <nav class="topnav">
+    #Shipment Overview</a>
+    #EDI Overview</a>
+    #Customs Overview</a>
+    #Trip Overview</a>
+    #Plan Board</a>
+    #Process Scanned Documents</a>
+    #Address Overview</a>
+    #Master Data</a>
+    #Invoicing</a>
+  </nav>
 
+  <!-- SECONDARY NAV (grey strip) -->
+  <nav class="subnav">
+    <span>Postcode Lookup</span>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="layout">
+    <!-- Hero surface (subtle gradient like screenshot) -->
+    <section class="hero">
+      <!-- Optional: you can place a faint background logo here using CSS background-image -->
+    </section>
+
+    <!-- Content area -->
     <section class="content">
-      <!-- COLLECTION -->
-      <div class="card">
-        <h2>Collection</h2>
-        <div class="grid">
+
+      <!-- FROM (Collection) -->
+      <article class="card" id="fromSection">
+        <h2>From (Collection)</h2>
+        <div class="topbar">
           <div>
-            <label for="Col_Country">Country</label>
-            <select id="Col_Country" name="Col_Country">
-            	<option value="1">UK</option>
-            	<option value="2">NL</option>
-            	<option value="3">XX</option>
+            <label for="Col_Country">Collection Country</label>
+            <select id="Col_Country">
+              <option value="" selected>— Select —</option>
+              <option value="UK">UK – United Kingdom</option>
+              <option value="BEL">BEL – Belgium</option>
+              <option value="NL">NL – Holland</option>
+              <option value="LUX">LUX – Luxembourg</option>
             </select>
           </div>
           <div>
-            <label for="Col_Postcode">Postcode</label>
-            <input id="Col_Postcode" type="text" placeholder="Enter postcode" disabled>
+            <label for="Col_Postcode">Collection Postcode</label>
+            <input id="Col_Postcode" placeholder="Type postcode and press Enter" autocomplete="off" disabled />
           </div>
         </div>
-        <div id="Col_Town" class="summary small muted"></div>
-      </div>
+        <!-- Summary (no 'topmatch card' wrapper) -->
+        <div id="Col_Town" class="summary"></div>
+      </article>
 
-      <!-- DELIVERY -->
-      <div class="card">
-        <h2>Delivery</h2>
-        <div class="grid">
+      <!-- TO (Destination) -->
+      <article class="card" id="toSection">
+        <h2>To (Destination)</h2>
+        <div class="topbar">
           <div>
-            <label for="Del_Country">Country</label>
-            <input id="Del_Country" type="text" placeholder="UK / Belgium / Netherlands / Luxembourg">
+            <label for="Del_Country">Delivery Country</label>
+            <select id="Del_Country">
+              <option value="" selected>— Select —</option>
+              <option value="UK">UK – United Kingdom</option>
+              <option value="BEL">BEL – Belgium</option>
+              <option value="NL">NL – Holland</option>
+              <option value="LUX">LUX – Luxembourg</option>
+            </select>
           </div>
           <div>
-            <label for="Del_Postcode">Postcode</label>
-            <input id="Del_Postcode" type="text" placeholder="Enter postcode" disabled>
+            <label for="Del_Postcode">Delivery Postcode</label>
+            <input id="Del_Postcode" placeholder="Type postcode and press Enter" autocomplete="off" disabled />
           </div>
         </div>
-        <div id="Del_Town" class="summary small muted"></div>
-      </div>
+        <!-- Summary (no 'topmatch card' wrapper) -->
+        <div id="Del_Town" class="summary"></div>
+      </article>
 
-      <!-- NUMBERS -->
-      <div class="card">
+      <!-- Numbers -->
+      <article class="card" id="numbersCard">
         <h2>Numbers</h2>
         <div class="numbers-grid">
           <div>
-            <label for="Num_1">Value 1</label>
-            <input id="Num_1" type="text" data-sum placeholder="e.g. 1,234">
+            <label for="num1">Number 1</label>
+            <input id="num1" type="number" inputmode="decimal" placeholder="0" data-sum />
           </div>
           <div>
-            <label for="Num_2">Value 2</label>
-            <input id="Num_2" type="text" data-sum placeholder="e.g. 567">
+            <label for="num2">Number 2</label>
+            <input id="num2" type="number" inputmode="decimal" placeholder="0" data-sum />
+          </div>
+          <div>
+            <label for="num3">Number 3</label>
+            <input id="num3" type="number" inputmode="decimal" placeholder="0" data-sum />
+          </div>
+          <div>
+            <label for="num4">Number 4</label>
+            <input id="num4" type="number" inputmode="decimal" placeholder="0" data-sum />
+          </div>
+          <div>
+            <label for="num5">Number 5</label>
+            <input id="num5" type="number" inputmode="decimal" placeholder="0" data-sum />
+          </div>
+          <div class="sum-card">
+            <strong class="muted small">Sum</strong><br/>
+            <span class="pill" id="sumTotal">0</span>
           </div>
         </div>
-        <p class="summary">
-          <span class="muted">Total:</span>
-          <strong id="sumTotal">0</strong>
-        </p>
-      </div>
+      </article>
     </section>
   </main>
 
+  <!-- FOOTER
   <footer class="footer">
-    © 2025 Postcode Portal
+    © 2025 Car Solutions Ltd. All Rights Reserved.
   </footer>
 
   <!-- Load external JS -->
