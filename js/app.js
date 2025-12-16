@@ -130,5 +130,5 @@
   document.addEventListener('change', (e)=>{
     if (e.target && e.target.matches('input[data-sum]')) updateSum();
   });
-//  updateSum(); // initial
+  updateSum();  initial
 
