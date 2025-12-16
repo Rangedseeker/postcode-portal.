@@ -1,138 +1,250 @@
 
-/* ===== THEME (from your specs) ===== */
+/* ===========================================================
+   THEME VARIABLES
+   =========================================================== */
 :root{
   /* Brand / bars */
-  --brand: #366697;          /* blue line / accent */
-  --brand-dark: #2f597f;     /* slightly darker for gradients (optional) */
+  --brand: #366697;
+  --brand-dark: #2f597f;
 
   /* Surfaces */
   --white: #ffffff;
-  --bg: #ADBED2;             /* page background (light steel blue) */
-  --panel: #ffffff;          /* cards/panels */
-  --panel-border: #666666;   /* primary border color */
-  --line: #777777;           /* secondary border color / separators */
+  --bg: #ADBED2;
+  --panel: #ffffff;
+  --panel-border: #666666;
+  --line: #777777;
 
   /* Text */
   --text: #222b3b;
   --muted: #64748b;
 
   /* Focus ring */
-  --focus: #366697;          /* use brand for focus ring */
+  --focus: #366697;
 
   /* Bars */
-  --subnav: #366697;         /* grey/blue strip under top nav */
-  --footer: #2f3b4a;         /* footer background (keep dark for contrast) */
+  --subnav: #366697;
+  --footer: #2f3b4a;
 }
 
-/* ===== BASE ===== */
+/* ===========================================================
+   GLOBAL BASE STYLES
+   =========================================================== */
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
   margin:0;
   background:var(--bg);
   color:var(--text);
-  /* Use your requested font stack */
   font:16px/1.5 "Arial Narrow", Arial, Helvetica, sans-serif;
 }
 a{color:inherit;text-decoration:none}
 
-/* ===== HEADER ===== */
+/* ===========================================================
+   HEADER (TOP BAR + BOTTOM BORDER)
+   =========================================================== */
 .header{
-  display:flex; align-items:center; justify-content:space-between;
-  gap:16px; padding:10px 16px; background:var(--white);
-  /* Use your border colors */
-  border-bottom:1px solid var(--panel-border);      /* #666666 */
-  position:sticky; top:0; z-index:100;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:10px 16px;
+  background:var(--white);
+  border-bottom:1px solid var(--panel-border); /* bottom border */
+  position:sticky;
+  top:0;
+  z-index:100;
 }
-.header__brand{display:flex; align-items:center; gap:10px}
-.logo{
-  width:38px; height:38px; border-radius:8px;
-  /* Solid brand instead of gradient, to match “blue line” vibe */
-  background:var(--brand);
-  border:1px solid var(--panel-border);            /* #666666 */
-}
-.brand-text{font-weight:600; letter-spacing:.2px}
-.header__right{display:flex; align-items:center; gap:12px}
-.user-label{color:var(--muted); font-size:14px}
-.header-icons{display:flex; gap:10px}
-.icon{display:inline-flex; align-items:center; justify-content:center}
 
-/* ===== TOP NAV (white strip) ===== */
-.topnav{
-  display:flex; flex-wrap:wrap; gap:8px; padding:8px 16px; background:var(--white);
-  /* Bottom border line: use #666666 to echo your spec */
-  border-bottom:1px solid var(--panel-border);
+.header__brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
 }
+
+.logo{
+  width:38px;
+  height:38px;
+  border-radius:8px;
+  background:var(--brand);
+  border:1px solid var(--panel-border);
+}
+
+.brand-text{font-weight:600; letter-spacing:.2px}
+
+.header__right{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.user-label{
+  color:var(--muted);
+  font-size:14px;
+}
+
+.header-icons{
+  display:flex;
+  gap:10px;
+}
+
+.icon{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* ===========================================================
+   TOP NAVIGATION BAR (WHITE BAR BELOW HEADER)
+   =========================================================== */
+.topnav{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  padding:8px 16px;
+  background:var(--white);
+  border-bottom:1px solid var(--panel-border); /* bottom border */
+}
+
 .topnav a{
-  padding:8px 10px; border-radius:6px; color:#344153;
+  padding:8px 10px;
+  border-radius:6px;
+  color:#344153;
   border:1px solid transparent;
 }
-.topnav a.active, .topnav a:hover{
+
+.topnav a.active,
+.topnav a:hover{
   background:#eef4ff;
-  border-color: var(--line);                        /* #777777 */
+  border-color: var(--line);
 }
 
-/* ===== SUB NAV (blue line with bottom border) ===== */
+/* ===========================================================
+   SUB NAV (BLUE BAR UNDER TOP NAV)
+   =========================================================== */
 .subnav{
-  background:var(--subnav);                         /* #366697 */
-  color:#fff; padding:8px 16px;
-  /* “bottom border, border:1px solid #666666” */
-  border-bottom:1px solid var(--panel-border);      /* #666666 */
+  background:var(--subnav);
+  color:#fff;
+  padding:8px 16px;
+  border-bottom:1px solid var(--panel-border); /* bottom border you wanted */
 }
 
-/* ===== LAYOUT ===== */
-.layout{max-width:1200px; margin:20px auto 40px; padding:0 16px}
+/* ===========================================================
+   PAGE LAYOUT WRAPPER
+   =========================================================== */
+.layout{
+  max-width:1200px;
+  margin:20px auto 40px;
+  padding:0 16px;
+}
+
 .hero{
   min-height:140px;
-  /* Subtle overlay so blue background feels lighter */
   background:linear-gradient(180deg, rgba(255,255,255,.7), rgba(255,255,255,.9));
-  border:1px solid var(--line);                     /* #777777 */
+  border:1px solid var(--line);
   border-radius:12px;
 }
-.content{display:grid; gap:16px; margin-top:16px}
 
-/* ===== CARDS / FORMS ===== */
+.content{
+  display:grid;
+  gap:16px;
+  margin-top:16px;
+}
+
+/* ===========================================================
+   FORM / CARD COMPONENTS (FROM / TO / NUMBERS TILES)
+   =========================================================== */
 .card{
-  background:var(--panel); 
-  border:1px solid var(--panel-border);             /* #666666 */
-  border-radius:12px; padding:14px;
+  background:var(--panel);
+  border:1px solid var(--panel-border);
+  border-radius:12px;
+  padding:14px;
 }
-h2{font-size:18px; margin:0 0 12px}
-label{display:block; font-size:12px; color:var(--muted); margin-bottom:6px}
+
+h2{
+  font-size:18px;
+  margin:0 0 12px;
+}
+
+label{
+  display:block;
+  font-size:12px;
+  color:var(--muted);
+  margin-bottom:6px;
+}
+
 input,select{
-  width:100%; padding:10px 12px; border-radius:8px;
-  border:1px solid var(--panel-border);             /* #666666 */
-  background:#fff; color:var(--text); outline:none;
+  width:100%;
+  padding:10px 12px;
+  border-radius:8px;
+  border:1px solid var(--panel-border);
+  background:#fff;
+  color:var(--text);
+  outline:none;
 }
+
 input:focus,select:focus{
   border-color:var(--focus);
-  box-shadow:0 0 0 3px rgba(54,102,151,.18);        /* brand focus ring */
+  box-shadow:0 0 0 3px rgba(54,102,151,.18);
 }
-.topbar{display:grid; grid-template-columns:1fr 1fr; gap:12px}
-.summary{margin-top:8px}
+
+.topbar{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.summary{
+  margin-top:8px;
+}
+
 .small{font-size:12px}
 .muted{color:var(--muted)}
 
-/* ===== Numbers ===== */
-.numbers-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+/* ===========================================================
+   NUMBERS TILE
+   =========================================================== */
+.numbers-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
 .sum-card{
-  background:#f9fbff; 
-  border:1px solid var(--panel-border);             /* #666666 */
-  border-radius:12px; padding:12px;
+  background:#f9fbff;
+  border:1px solid var(--panel-border);
+  border-radius:12px;
+  padding:12px;
 }
+
 .pill{
-  display:inline-grid; grid-auto-flow:column; gap:8px; align-items:center;
-  padding:8px 10px; border:1px solid var(--line);   /* #777777 */
-  border-radius:999px; background:#fafbff; color:var(--muted)
+  display:inline-grid;
+  grid-auto-flow:column;
+  gap:8px;
+  align-items:center;
+  padding:8px 10px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:#fafbff;
+  color:var(--muted);
 }
 
-/* ===== FOOTER ===== */
+/* ===========================================================
+   FOOTER
+   =========================================================== */
 .footer{
-  background:var(--footer); color:#cbd5e1; text-align:center;
-  padding:12px 16px; border-top:1px solid #22303c;
+  background:var(--footer);
+  color:#cbd5e1;
+  text-align:center;
+  padding:12px 16px;
+  border-top:1px solid #22303c;
 }
 
-/* ===== RESPONSIVE ===== */
+/* ===========================================================
+     RESPONSIVE
+   =========================================================== */
 @media (max-width:900px){
-  .topbar, .numbers-grid{grid-template-columns:1  .topbar, .numbers-grid{grid-template-columns:1fr}
+  .topbar,
+  .numbers-grid{
+    grid-template-columns:1fr;
+  }
 
